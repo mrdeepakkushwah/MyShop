@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ email: "", password: "" });
+    const [formData, setFormData] = useState({ email: "", password: "", role: "" });
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
@@ -16,24 +16,29 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check if role is selected
+        if (!formData.role) {
+            toast.error("Please select a role.");
+            return;
+        }
+
         setLoading(true);
 
         try {
             const res = await axios.post("http://localhost:4000/login", formData);
-
             const { token, user } = res.data;
 
             if (token) localStorage.setItem("token", token);
             if (user) {
                 localStorage.setItem("user", JSON.stringify(user));
                 if (user.role) {
-                    localStorage.setItem("role", user.role); // Save role for access control
+                    localStorage.setItem("role", user.role);
                 }
             }
 
             toast.success("Login successful!");
 
-            // Role based redirect
             setTimeout(() => {
                 if (user.role === "admin") {
                     navigate("/admin/dashboard");
@@ -80,6 +85,22 @@ const Login = () => {
                                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="••••••••"
                             />
+                        </div>
+
+                        <div>
+                            <label htmlFor="role" className="block text-sm mb-1">Role</label>
+                            <select
+                                name="role"
+                                id="role"
+                                value={formData.role}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            >
+                                <option value="" disabled>Select Role</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
 
                         <button

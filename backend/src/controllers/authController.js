@@ -45,51 +45,75 @@ const generateTokens = (user) => {
 // ---------- Signup ----------
 const signup = async (req, res) => {
   try {
-    const { name, email, password, contact, role } = req.body;
+    const { name, email, password, contact, city, pincode, dob, gender, role } =
+      req.body;
 
-    if (!name || !email || !password || !contact || !role) {
-      return res.status(400).json({ message: "All fields are required." });
+    // Validate required fields
+    
+    if (!name || !email || !password || !contact) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled." });
     }
 
+    // Validate contact number
+    if (!/^\d{10}$/.test(contact.toString())) {
+      return res
+        .status(400)
+        .json({ message: "Enter a valid 10-digit contact number." });
+    }
+
+    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Enter a valid email address." });
     }
 
-    // Check email uniqueness
-    const existingUser = await userModel.findOne({ email });
+    // Validate gender if provided
+    if (gender && !["male", "female", "other"].includes(gender.toLowerCase())) {
+      return res.status(400).json({ message: "Invalid gender value." });
+    }
+
+    // Check for unique email and contact
+    const existingUser = await userModel.findOne({
+      $or: [{ email }, { contact }],
+    });
     if (existingUser) {
-      return res.status(409).json({ message: "Email already registered." });
+      const conflictField = existingUser.email === email ? "Email" : "Contact";
+      return res
+        .status(409)
+        .json({ message: `${conflictField} already registered.` });
     }
 
-    // Check contact uniqueness
-    const existingUserContact = await userModel.findOne({ contact });
-    if (existingUserContact) {
-      return res.status(409).json({ message: "Contact already registered." });
-    }
-
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create new user
     const newUser = await userModel.create({
       name,
       email,
       password: hashedPassword,
       contact,
-      role,
+      city,
+      pincode,
+      dob,
+      gender,
     });
 
+    // Generate tokens
     const tokens = generateTokens(newUser);
 
-    // Set refresh token in HttpOnly cookie
+    // Set refresh token as HttpOnly cookie
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    // Send response
     return res.status(201).json({
-      message: "User Signup Successful",
+      message: "User Signup Successfully",
       token: tokens.accessToken,
       user: getSafeUser(newUser),
     });
@@ -99,15 +123,16 @@ const signup = async (req, res) => {
   }
 };
 
+module.exports = { signup };
 // ---------- Login ----------
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password,role } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || !role) {
       return res
         .status(400)
-        .json({ message: "Email and password are required." });
+        .json({ message: "Email and password or role are required." });
     }
 
     const existingUser = await userModel.findOne({ email });
