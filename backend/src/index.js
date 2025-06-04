@@ -1,6 +1,7 @@
 const express = require("express");
 const routes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productsRoutes");
+const orderRoutes = require('./routes/order');
 const cors = require("cors");
 const dbConnect = require("./config/dbConnect");
 const dotenv = require("dotenv");
@@ -42,6 +43,7 @@ app.use(
 // Routes
 app.use("/", routes);
 app.use("/", productRoutes);
+app.use("/", orderRoutes);
 
 // Default test route
 app.get("/", (req, res) => {

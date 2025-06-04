@@ -1,27 +1,68 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { FaTrashAlt } from "react-icons/fa";
 
 const Cart = ({
     cart,
     updateQty,
     removeItem,
-    handleCheckout,
     formatPrice,
-    totalPrice,
+    totalPrice, // you may not need this prop since you calculate total locally below
 }) => {
+    const navigate = useNavigate();
+
+    // Calculate total price here so it's always accurate and consistent
+    const calculatedTotalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+    const handleCheckout = () => {
+        // Navigate to checkout page with cart and totalPrice as state
+        navigate("/checkout", { state: { cart, totalPrice: calculatedTotalPrice } });
+    };
+
+    const [removingIds, setRemovingIds] = useState([]);
+    const [qtyChangedId, setQtyChangedId] = useState(null);
+    const qtyTimers = useRef({});
+
+    const handleQtyChange = (itemId, val) => {
+        if (qtyTimers.current[itemId]) {
+            clearTimeout(qtyTimers.current[itemId]);
+        }
+        qtyTimers.current[itemId] = setTimeout(() => {
+            updateQty(itemId, val);
+            setQtyChangedId(itemId);
+            setTimeout(() => setQtyChangedId(null), 500);
+        }, 300);
+    };
+
+    const onRemove = (itemId) => {
+        setRemovingIds((ids) => [...ids, itemId]);
+        setTimeout(() => {
+            removeItem(itemId);
+            setRemovingIds((ids) => ids.filter((id) => id !== itemId));
+        }, 300);
+    };
+
     return (
         <div className="flex flex-col h-full max-h-[80vh] min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
             {cart.length === 0 ? (
                 <p className="text-center text-gray-500 mt-20">Your cart is empty.</p>
             ) : (
                 <>
-                    <ul className="flex-1 overflow-y-auto space-y-4 mb-4 px-1 sm:px-3">
+                    <ul className="flex-1 overflow-y-auto scroll-smooth space-y-4 mb-4 px-1 sm:px-3">
                         {cart.map((item) => {
                             const itemId = item.id || item._id;
+                            const isRemoving = removingIds.includes(itemId);
+                            const isQtyChanged = qtyChangedId === itemId;
+
                             return (
                                 <li
                                     key={itemId}
-                                    className="flex flex-col sm:flex-row items-center sm:items-start gap-4 border-b pb-3"
+                                    className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 border-b pb-3
+                                        transform transition-all duration-300 ease-in-out
+                                        ${isRemoving ? "opacity-0 -translate-x-10 h-0 p-0 overflow-hidden" : "opacity-100"}
+                                        ${isQtyChanged ? "bg-yellow-100" : ""}
+                                    `}
                                 >
                                     <img
                                         src={item.image}
@@ -44,17 +85,19 @@ const Cart = ({
                                                 type="number"
                                                 id={`qty-${itemId}`}
                                                 min="1"
-                                                value={item.qty}
-                                                onChange={(e) =>
-                                                    updateQty(itemId, parseInt(e.target.value, 10))
-                                                }
+                                                defaultValue={item.qty}
+                                                onChange={(e) => {
+                                                    const val = Math.max(1, parseInt(e.target.value, 10) || 1);
+                                                    handleQtyChange(itemId, val);
+                                                }}
                                                 className="w-16 border rounded px-2 py-1 text-center"
                                             />
                                         </div>
                                     </div>
 
                                     <button
-                                        onClick={() => removeItem(itemId)}
+                                        type="button"
+                                        onClick={() => onRemove(itemId)}
                                         className="text-red-600 hover:text-red-800 mt-3 sm:mt-0"
                                         title="Remove Item"
                                         aria-label={`Remove ${item.name} from cart`}
@@ -68,7 +111,7 @@ const Cart = ({
 
                     <div className="border-t pt-4 px-2 sm:px-3">
                         <p className="text-lg font-bold text-gray-900 mb-4 text-center sm:text-right">
-                            Total: {formatPrice(totalPrice)}
+                            Total: {formatPrice(calculatedTotalPrice)}
                         </p>
 
                         <button

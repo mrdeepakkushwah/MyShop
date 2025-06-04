@@ -20,7 +20,8 @@ import AdminProducts from "./Pages/AdminProducts";
 import AdminOrders from "./Pages/AdminOrders";
 import AdminSettings from "./Pages/AdminSettings";
 import AddProductPage from "./Components/AddProductPage";
-
+import CheckoutPage from "./Pages/CheckoutPage";
+import OrderSuccess from "./Pages/OrderSuccess";
 import PrivateRoute from "./context/PrivateRoute"; // ✅ Only this import is needed
 
 function App() {
@@ -98,6 +99,8 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
           <Route path="product/add" element={<AddProductPage />} />
         </Route>
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
       </Routes>
     </Router>
   );

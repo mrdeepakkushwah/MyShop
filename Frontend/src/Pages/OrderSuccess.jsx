@@ -1,27 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Unauthorized = () => {
-        const navigate = useNavigate();
+export default function OrderSuccess() {
+    const navigate = useNavigate();
     const [countdown, setCountdown] = useState(3);
+
     useEffect(() => {
         if (countdown === 0) {
-            navigate("/"); // Redirect to user dashboard after countdown
+            navigate("/user/dashboard"); // Redirect to user dashboard after countdown
             return;
         }
         const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
         return () => clearTimeout(timer);
     }, [countdown, navigate]);
+
     return (
-        <div className="p-6 text-center text-red-600">
-            <h1 className="text-2xl font-bold mb-2">403 - Unauthorized</h1>
-            <p>You do not have permission to view this page.</p>
+        <div className="p-6 text-center">
+            <h2 className="text-2xl font-bold text-green-700 mb-4">
+                Order Placed Successfully!
+            </h2>
+            <p>Thank you for shopping with us.</p>
             <p className="mt-2 text-gray-600">
                 Redirecting in <span className="font-semibold">{countdown}</span>{" "}
                 second{countdown !== 1 ? "s" : ""}...
             </p>
         </div>
     );
-};
-
-export default Unauthorized; // ✅ default export
+}

@@ -1,4 +1,5 @@
-const Product = require('../models/products');
+const Order = require("../models/order");
+const Product = require("../models/products");
 
 // POST /product/add
 const addProduct = async (req, res) => {
@@ -44,14 +45,13 @@ const addProduct = async (req, res) => {
 
 // get /Product
 
-const  getAllProducts =  async (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
-    
     const products = await Product.find();
-    if(!products){
-      res.status(404).json({message:"Products Not Found"})
+    if (!products) {
+      res.status(404).json({ message: "Products Not Found" });
     }
-    res.status(201).json({message:"Product get Successfully",products});
+    res.status(201).json({ message: "Product get Successfully", products });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch products" });
   }
@@ -103,4 +103,68 @@ const deleteProductById = async (req, res) => {
       .json({ error: "Server error while deleting product" });
   }
 };
-module.exports = { addProduct,deleteProductById,updateProductById,getAllProducts };
+
+// Add Orders
+const addOrders = async (req, res) => {
+  const { items, totalAmount } = req.body;
+
+  if (!items || items.length === 0) {
+    return res.status(400).json({ message: "No items in the order." });
+  }
+
+  try {
+
+    // console.log("user data ",req.user)
+    const newOrder = new Order({
+      userId: req.user._id,
+      items,
+      totalAmount,
+    });
+    await newOrder.save();
+    return res
+      .status(201)
+      .json({ message: "Order placed successfully", order: newOrder });
+  } catch (error) {
+    console.error("Error placing order:", error);
+    return res.status(500).json({ message: " Internal Server error" });
+  }
+};
+// Get Orders
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Order
+      .find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.json({ message: "Order Get Successfully", orders });
+  } catch (err) {
+    console.error("Error fetching orders:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+ 
+     return res.status(200).json({order});
+  } catch (err) {
+    return res.status(500).json({ message: "Server error", err });
+  }
+};
+module.exports = {
+  addProduct,
+  deleteProductById,
+  updateProductById,
+  getAllProducts,
+  addOrders,getOrders
+  ,getOrderById
+};
