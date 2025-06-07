@@ -1,0 +1,16 @@
+title: Your Project Title
+description: Description of your project
+baseurl: "" # Set if your project is in a subdirectory
+url: "https://yourusername.github.io" # Replace with your GitHub Pages URL
+
+exclude:
+  - node_modules
+  - backend/node_modules
+  - vendor
+  - README.md
+  - package-lock.json
+  - yarn.lock
+  - .gitignore
+
+markdown: kramdown
+theme: minima
