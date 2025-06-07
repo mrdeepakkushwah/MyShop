@@ -53,7 +53,9 @@ const Signup = () => {
     try {
       const response = await axios.post(
         "http://localhost:4000/signup",
-        formData
+        formData, {
+        withCredentials: true,
+      }
       );
 
       if (response.data.message === "User Signup Successfully") {
@@ -84,7 +86,7 @@ const Signup = () => {
       console.error("Signup error:", error);
       toast.error(
         error?.response?.data?.message ||
-        "Something went wrong. Please try again.",
+        "Signup failed. Please check internet connection. Try again.",
         {
           position: "top-right",
           autoClose: 3000,
@@ -205,8 +207,8 @@ const Signup = () => {
               type="submit"
               disabled={loading}
               className={`w-full py-2 px-4 text-white font-semibold rounded-md ${loading
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
                 }`}
             >
               {loading ? "Signing up..." : "Signup"}

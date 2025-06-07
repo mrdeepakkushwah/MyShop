@@ -1,4 +1,3 @@
-// src/pages/UserProfile.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -33,9 +32,19 @@ const UserProfile = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem("token");
-            const { data } = await axios.put("http://localhost:4000/update-profile", user, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+
+            // Prepare user object to send (remove _id)
+            const { _id, ...userToSend } = user;
+
+            const { data } = await axios.put(
+                "http://localhost:4000/update-profile",
+                userToSend,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+
+            // Update localStorage with returned user
             localStorage.setItem("user", JSON.stringify(data.user));
             toast.success("Profile updated successfully!");
             setEditMode(false);
@@ -46,7 +55,9 @@ const UserProfile = () => {
 
     const renderInput = (label, name, type = "text") => (
         <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+                {label}
+            </label>
             {editMode ? (
                 <input
                     type={type}
@@ -79,9 +90,12 @@ const UserProfile = () => {
                 {renderInput("City", "city")}
                 {renderInput("Pincode", "pincode")}
                 {renderInput("Date of Birth", "dob", "date")}
+
                 {editMode ? (
                     <div>
-                        <label className="block mb-1 text-sm font-medium text-gray-700">Gender</label>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">
+                            Gender
+                        </label>
                         <select
                             name="gender"
                             value={user.gender || ""}
@@ -100,7 +114,9 @@ const UserProfile = () => {
 
                 {editMode && (
                     <div>
-                        <label className="block mb-1 text-sm font-medium text-gray-700">New Password</label>
+                        <label className="block mb-1 text-sm font-medium text-gray-700">
+                            New Password
+                        </label>
                         <input
                             type="password"
                             name="password"

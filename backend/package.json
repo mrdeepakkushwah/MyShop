@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "A Node.js backend with Express, MongoDB, JWT, and validation",
   "main": "src/index.js",
-  
-
   "scripts": {
     "start": "nodemon src/index.js",
     "dev": "nodemon src/index.js",
@@ -27,6 +25,7 @@
     "multer": "^2.0.0"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "nodemon": "^3.1.10"
   }
 }

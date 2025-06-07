@@ -55,42 +55,112 @@ const UserDashboard = () => {
         setCart(savedCart);
     }, [navigate]);
 
-    const addToCart = (product) => {
-        const productId = product.id || product._id;
-        const updatedCart = [...cart];
-        const existingItem = updatedCart.find(
-            (item) => (item.id || item._id) === productId
-        );
+    // const addToCart = (product) => {
+    //     const productId = product.id || product._id;
+    //     const updatedCart = [...cart];
+    //     const existingItem = updatedCart.find(
+    //         (item) => (item.id || item._id) === productId
+    //     );
 
-        if (existingItem) {
-            existingItem.qty += 1;
-        } else {
-            updatedCart.push({ ...product, id: productId, qty: 1 });
+    //     if (existingItem) {
+    //         existingItem.qty += 1;
+    //     } else {
+    //         updatedCart.push({ ...product, id: productId, qty: 1 });
+    //     }
+
+    //     setCart(updatedCart);
+    //     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    //     toast.success(`${product.name} added to cart`);
+    // };
+
+    const addToCart = async (product) => {
+        const productId = product._id || product.id;
+        const updatedCart = [...cart];
+        const existingItem = updatedCart.find((item) => item._id === productId);
+
+        // Prevent adding if stock is 0
+        if (product.stock <= 0) {
+            return toast.warn("Out of stock!");
         }
 
-        setCart(updatedCart);
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-        toast.success(`${product.name} added to cart`);
-    };
+        try {
+            // Call backend to reduce stock
+            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+                qtyChange: 1,
+            });
 
-    const updateCartItemQty = (productId, newQty) => {
-        if (newQty < 1) return;
-        const updatedCart = cart.map((item) =>
-            (item.id || item._id) === productId ? { ...item, qty: newQty } : item
-        );
-        setCart(updatedCart);
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-    };
+            if (existingItem) {
+                existingItem.qty += 1;
+            } else {
+                updatedCart.push({ ...product, qty: 1 });
+            }
 
-    const removeCartItem = (productId) => {
-        const updatedCart = cart.filter(
-            (item) => (item.id || item._id) !== productId
-        );
-        setCart(updatedCart);
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-        toast.info("Item removed from cart");
+            setCart(updatedCart);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            toast.success(`${product.name} added to cart`);
+        } catch (error) {
+            toast.error("Unable to add item. Possibly out of stock.");
+        }
     };
+      
+    // const updateCartItemQty = (productId, newQty) => {
+    //     if (newQty < 1) return;
+    //     const updatedCart = cart.map((item) =>
+    //         (item.id || item._id) === productId ? { ...item, qty: newQty } : item
+    //     );
+    //     setCart(updatedCart);
+    //     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    // };
+    const updateCartItemQty = async (productId, newQty) => {
+        const item = cart.find((item) => item._id === productId);
+        if (!item) return;
 
+        const qtyDiff = newQty - item.qty;
+        if (newQty < 1 || qtyDiff === 0) return;
+
+        try {
+            // Backend update: decrease or increase stock
+            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+                qtyChange: qtyDiff,
+            });
+
+            const updatedCart = cart.map((item) =>
+                item._id === productId ? { ...item, qty: newQty } : item
+            );
+            setCart(updatedCart);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+        } catch (error) {
+            toast.error("Stock update failed");
+        }
+    };
+      
+    // const removeCartItem = (productId) => {
+    //     const updatedCart = cart.filter(
+    //         (item) => (item.id || item._id) !== productId
+    //     );
+    //     setCart(updatedCart);
+    //     localStorage.setItem("cart", JSON.stringify(updatedCart));
+    //     toast.info("Item removed from cart");
+    // };
+
+    const removeCartItem = async (productId) => {
+        const item = cart.find((item) => item._id === productId);
+        if (!item) return;
+
+        try {
+            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+                qtyChange: -item.qty,
+            });
+
+            const updatedCart = cart.filter((i) => i._id !== productId);
+            setCart(updatedCart);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            toast.info("Item removed from cart");
+        } catch (error) {
+            toast.error("Failed to restore stock");
+        }
+    };
+      
     const handleCheckout = () => {
         if (!cart.length) return toast.warning("Your cart is empty.");
         navigate("/checkout", { state: { cart } });

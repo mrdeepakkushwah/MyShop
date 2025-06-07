@@ -7,7 +7,7 @@ import About from "./Pages/About";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import Customer from "./Pages/Customer";
-import Dashboard from "./Components/Dashboard";
+import Dashboard from "./Components/Dashboard"; // Admin layout dashboard
 import UserDashboard from "./Components/UserDashboard";
 import OrderHistory from "./Pages/OrderHistory";
 import MyOrders from "./Pages/MyOrders";
@@ -15,74 +15,76 @@ import TrackOrder from "./Pages/TrackOrder";
 import UserProfile from "./Pages/UserProfile";
 import Unauthorized from "./Pages/Unauthorized";
 import AdminDashboard from "./Pages/AdminDashboard";
-import AdminUsers from "./Pages/AdminUsers";
 import AdminProducts from "./Pages/AdminProducts";
 import AdminOrders from "./Pages/AdminOrders";
 import AdminSettings from "./Pages/AdminSettings";
 import AddProductPage from "./Components/AddProductPage";
 import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccess from "./Pages/OrderSuccess";
-import PrivateRoute from "./context/PrivateRoute"; // ✅ Only this import is needed
+import PrivateRoute from "./context/PrivateRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* ✅ Public Routes with Main Layout */}
+        {/* Public + User Routes wrapped with MainLayout */}
         <Route element={<MainLayout />}>
+          {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/customer" element={<Customer />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+
+          {/* Unauthorized */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+
+          {/* User protected routes */}
+          <Route
+            path="/user/dashboard"
+            element={
+              <PrivateRoute allowedRoles={["user", "admin"]}>
+                <UserDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute allowedRoles={["user", "admin"]}>
+                <UserProfile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/user/orders"
+            element={
+              <PrivateRoute allowedRoles={["user", "admin"]}>
+                <OrderHistory />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <PrivateRoute allowedRoles={["user", "admin"]}>
+                <MyOrders />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/track-order"
+            element={
+              <PrivateRoute allowedRoles={["user", "admin"]}>
+                <TrackOrder />
+              </PrivateRoute>
+            }
+          />
         </Route>
 
-        {/* ✅ Unauthorized page */}
-        <Route path="/unauthorized" element={<Unauthorized />} />
-
-        {/* ✅ Protected User Routes */}
-        <Route
-          path="/user/dashboard"
-          element={
-            <PrivateRoute allowedRoles={["user", "admin"]}>
-              <UserDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <PrivateRoute allowedRoles={["user", "admin"]}>
-              <UserProfile />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/user/orders"
-          element={
-            <PrivateRoute allowedRoles={["user", "admin"]}>
-              <OrderHistory />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/orders"
-          element={
-            <PrivateRoute allowedRoles={["user", "admin"]}>
-              <MyOrders />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/track-order"
-          element={
-            <PrivateRoute allowedRoles={["user", "admin"]}>
-              <TrackOrder />
-            </PrivateRoute>
-          }
-        />
-
-        {/* ✅ Admin Dashboard Layout with Nested Protected Routes */}
+        {/* Admin Nested Routes without MainLayout, using Dashboard layout */}
         <Route
           path="/admin"
           element={
@@ -99,8 +101,9 @@ function App() {
           <Route path="settings" element={<AdminSettings />} />
           <Route path="product/add" element={<AddProductPage />} />
         </Route>
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
+
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

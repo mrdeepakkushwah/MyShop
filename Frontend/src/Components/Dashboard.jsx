@@ -5,17 +5,6 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [userName, setUserName] = useState("");
 
-    // useEffect(() => {
-    //     const role = localStorage.getItem("role");
-    //     const name = localStorage.getItem("name"); // get user name from localStorage
-
-    //     if (!role) {
-    //         navigate("/login");
-    //     } else {
-    //         setUserName(name || "User");
-    //     }
-    // }, [navigate]);
-
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
 
@@ -36,12 +25,6 @@ const Dashboard = () => {
         }
     }, [navigate]);
     
-    // const handleLogout = () => {
-    //     localStorage.removeItem("role");
-    //     localStorage.removeItem("token");
-    //     localStorage.removeItem("name");
-    //     navigate("/login");
-    // };
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token"); // keep this if you're using JWT
@@ -76,7 +59,7 @@ const Dashboard = () => {
             {/* Main content */}
             <main className="flex flex-1 flex-col md:flex-row p-6 gap-6">
                 {/* Sidebar */}
-                <nav className="bg-white rounded-lg shadow-md md:w-1/4 p-4">
+                <nav className="bg-white rounded-lg shadow-md md:w-1/6 p-4">
                     <ul className="space-y-3 text-gray-700">
                         <li>
                             <Link
@@ -137,7 +120,7 @@ const Dashboard = () => {
 
             {/* Footer */}
             <footer className="text-center text-gray-500 text-sm py-4">
-                © 2025 YourCompany. All rights reserved.
+                © 2025 My Shop. All rights reserved.
             </footer>
         </div>
     );

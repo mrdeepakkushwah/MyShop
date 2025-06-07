@@ -1,3 +1,4 @@
+// src/pages/EditProfile.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -14,6 +15,8 @@ const EditProfile = () => {
         gender: "",
         password: "",
     });
+
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -36,6 +39,8 @@ const EditProfile = () => {
                 });
             } catch (err) {
                 toast.error("Failed to load user details.");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -49,19 +54,34 @@ const EditProfile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Basic validation
+        if (formData.contact.length !== 10 || isNaN(formData.contact)) {
+            return toast.error("Contact must be a 10-digit number.");
+        }
+
+        if (formData.email.trim() === "") {
+            return toast.error("Email is required.");
+        }
+
         try {
-            await axios.put("http://localhost:4000/api/user/update", formData, {
+            const res = await axios.put("http://localhost:4000/api/user/update-profile", formData, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
             });
             toast.success("Profile updated successfully!");
+            localStorage.setItem("user", JSON.stringify(res.data.user));
         } catch (error) {
             toast.error(
                 error?.response?.data?.message || "Error updating profile"
             );
         }
     };
+
+    if (loading) {
+        return <div className="text-center mt-10 text-lg text-gray-600">Loading profile...</div>;
+    }
 
     return (
         <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded-xl">

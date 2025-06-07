@@ -34,3 +34,62 @@
 .animate-slide-out {
     animation: slide-out 0.3s ease-in forwards;
 }
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-scroll {
+    animation: scroll 20s linear infinite;
+}
+@keyframes fadeInSlideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-slide {
+    animation: fadeInSlideDown 0.25s ease-out forwards;
+}
+
+@keyframes fadeInSlideDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-slide {
+    animation: fadeInSlideDown 0.25s ease-out forwards;
+}
+
+/* Arrow on dropdown */
+.dropdown-arrow {
+    position: absolute;
+    top: -6px;
+    right: 12px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    transform: rotate(45deg);
+    border-left: 1px solid #d1d5db;
+    /* Tailwind border-gray-300 */
+    border-top: 1px solid #d1d5db;
+    z-index: 25;
+}

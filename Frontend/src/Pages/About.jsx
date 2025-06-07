@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import Navbar from '../Components/Navbar';
 
 const heroImages = [
   'https://images.unsplash.com/photo-1585386959984-a4155224a1c1?auto=format&fit=crop&w=1400&q=80',
   'https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1400&q=80',
   'https://images.unsplash.com/photo-1609947024030-6373c69a1821?auto=format&fit=crop&w=1400&q=80',
+  'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?auto=format&fit=crop&w=1400&q=80',
+  'https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1400&q=80',
 ];
 
 const team = [
@@ -45,29 +48,32 @@ const partners = [
 ];
 
 const About = () => {
-  const [currentImage, setCurrentImage] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div>
+    <div className="bg-gray-50">
+      {/* Navbar */}
+      <Navbar />
+
       {/* Hero Section */}
-      <div
-        className="relative h-[80vh] bg-cover bg-center transition-all duration-1000"
-        style={{ backgroundImage: `url('${heroImages[currentImage]}')` }}
-      >
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-          <h1 className="text-white text-5xl md:text-6xl font-extrabold text-center px-4">
+      <div className="relative h-[60vh] overflow-hidden bg-black">
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+          <h1 className="text-white text-4xl md:text-6xl font-extrabold text-center px-4">
             Discover the People Behind Our Passion
           </h1>
         </div>
+        <div className="absolute top-0 left-0 flex h-full w-[300%] animate-scroll">
+          {heroImages.concat(heroImages).map((img, index) => (
+            <div key={index} className="h-full w-[20%] flex-shrink-0">
+              <img
+                src={img}
+                alt="Hero"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
         {/* Mission */}
@@ -97,14 +103,14 @@ const About = () => {
           </div>
         </section>
 
-        {/* Team Section */}
+        {/* Team */}
         <section className="mb-20">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Meet the Team</h2>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-10">
             {team.map((member) => (
               <div
                 key={member.name}
-                className="bg-white rounded-3xl shadow-md hover:shadow-xl transition-all text-center p-6"
+                className="bg-white rounded-3xl shadow-md hover:shadow-xl transition-all text-center p-6 transform hover:-translate-y-2"
               >
                 <img
                   src={member.image}
@@ -123,7 +129,10 @@ const About = () => {
           <h2 className="text-3xl font-bold text-gray-800 mb-12">What Our Customers Say</h2>
           <div className="grid sm:grid-cols-2 gap-8">
             {testimonials.map((t, i) => (
-              <div key={i} className="bg-white rounded-xl shadow p-6">
+              <div
+                key={i}
+                className="bg-white rounded-xl shadow p-6 transition transform hover:scale-105"
+              >
                 <p className="text-gray-600 mb-4 italic">"{t.feedback}"</p>
                 <div className="flex items-center justify-center gap-3">
                   <img src={t.image} alt={t.name} className="w-12 h-12 rounded-full" />
@@ -137,38 +146,37 @@ const About = () => {
         {/* Partners */}
         <section className="mb-20 text-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-8">Our Trusted Partners</h2>
-          <div className="flex justify-center items-center gap-8 flex-wrap">
+          <div className="flex justify-center items-center gap-8 flex-wrap animate-fadeIn">
             {partners.map((logo, i) => (
-              <img key={i} src={logo} alt="partner" className="h-12 object-contain grayscale hover:grayscale-0 transition" />
+              <img
+                key={i}
+                src={logo}
+                alt="partner"
+                className="h-12 object-contain grayscale hover:grayscale-0 transition"
+              />
             ))}
           </div>
         </section>
 
-        {/* Contact Section */}
+        {/* Contact */}
         <section className="text-center">
           <h2 className="text-3xl font-bold mb-6 text-gray-800">Get in Touch</h2>
           <div className="space-y-4 text-gray-700">
             <div className="flex justify-center items-center gap-3">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M3 8l7.89 5.26a1 1 0 001.22 0L20 8" />
-                <path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z" />
-              </svg>
+              <span>📧</span>
               <span>deepakKushwah475110@gmail.com</span>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M3 5h2l3 7v6h8v-6l3-7h2" />
-              </svg>
+              <span>📞</span>
               <span>+91-9109001109</span>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M12 2C8 2 4 5 4 9c0 4.25 6.6 11.7 7.23 12.38a1 1 0 001.54 0C13.4 20.7 20 13.25 20 9c0-4-4-7-8-7z" />
-              </svg>
-              <span>Ward 15 Ramgarh Street Dabra, Springfield</span>
+              <span>📍</span>
+              <span>Ward 15 Ramgarh Street Dabra</span>
             </div>
           </div>
         </section>
+
       </div>
     </div>
   );

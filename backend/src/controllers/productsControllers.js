@@ -1,4 +1,5 @@
 const Order = require("../models/order");
+const User = require('../models/userModel');
 const Product = require("../models/products");
 
 // POST /product/add
@@ -84,6 +85,29 @@ const updateProductById = async (req, res) => {
   }
 };
 
+const updateStock = async (req, res) => {
+  const { id } = req.params;
+  const { qtyChange } = req.body; // qtyChange can be positive or negative
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    const newStock = product.stock - qtyChange;
+
+    if (newStock < 0) {
+      return res.status(400).json({ message: "Not enough stock available" });
+    }
+
+    product.stock = newStock;
+    await product.save();
+
+    res.status(200).json({ message: "Stock updated", product });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 // DELETE /product/:id
 const deleteProductById = async (req, res) => {
   try {
@@ -105,6 +129,30 @@ const deleteProductById = async (req, res) => {
 };
 
 // Add Orders
+// const addOrders = async (req, res) => {
+//   const { items, totalAmount } = req.body;
+
+//   if (!items || items.length === 0) {
+//     return res.status(400).json({ message: "No items in the order." });
+//   }
+
+//   try {
+
+//     // console.log("user data ",req.user)
+//     const newOrder = new Order({
+//       user: req.user,
+//       items,
+//       totalAmount,
+//     });
+//     await newOrder.save();
+//     return res
+//       .status(201)
+//       .json({ message: "Order placed successfully", order: newOrder });
+//   } catch (error) {
+//     console.error("Error placing order:", error);
+//     return res.status(500).json({ message: " Internal Server error" });
+//   }
+// };
 const addOrders = async (req, res) => {
   const { items, totalAmount } = req.body;
 
@@ -113,36 +161,78 @@ const addOrders = async (req, res) => {
   }
 
   try {
-
-    // console.log("user data ",req.user)
     const newOrder = new Order({
-      userId: req.user._id,
+      userId: req.user._id, // Only the ID, not the whole user object
       items,
       totalAmount,
     });
+
     await newOrder.save();
-    return res
-      .status(201)
-      .json({ message: "Order placed successfully", order: newOrder });
+
+    return res.status(201).json({
+      message: "Order placed successfully",
+      order: newOrder,
+    });
   } catch (error) {
     console.error("Error placing order:", error);
-    return res.status(500).json({ message: " Internal Server error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 // Get Orders
+// const getOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.find()
+
+//     return res.json({ message: "Order Get Successfully", orders });
+//   } catch (err) {
+//     console.error("Error fetching orders:", err);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// };
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order
-      .find({ userId: req.user.id })
-      .sort({ createdAt: -1 })
-      .lean();
+    const user = await User.findById(req.user._id).select("name email address");
 
-    return res.json({ message: "Order Get Successfully", orders });
+    const orders = await Order.find({ userId: user._id }).sort({
+      createdAt: -1,
+    });
+
+    return res.status(200).json({ user, orders });
   } catch (err) {
     console.error("Error fetching orders:", err);
-    return res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    res.status(200).json({ product });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getOrdersAdmin = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 }) // recent orders first
+      .populate("userId", "name email city pincode"); // Optional: include user info
+
+    return res.status(200).json({
+      message: "Orders fetched successfully",
+      orders,
+      count: orders.length,
+    });
+  } catch (error) {
+    console.error("Error fetching admin orders:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 
 const getOrderById = async (req, res) => {
   try {
@@ -162,9 +252,11 @@ const getOrderById = async (req, res) => {
 };
 module.exports = {
   addProduct,
+  updateStock,
   deleteProductById,
   updateProductById,
   getAllProducts,
   addOrders,getOrders
-  ,getOrderById
+  ,getOrderById,getOrdersAdmin,
+  getProductById
 };

@@ -6,18 +6,21 @@ import ShopFooter from "./ShopFooter";
 export default function MainLayout() {
     const { pathname } = useLocation();
 
-    // Hide footer/navbar on auth pages if needed (optional)
-    const hideHeaderFooter = pathname.startsWith("/login") || pathname.startsWith("/signup");
+    // Show Navbar only on Home page
+    const showNavbar = pathname === "/";
+
+    // Hide Footer on login/signup
+    const hideFooter = pathname.startsWith("/login") || pathname.startsWith("/signup");
 
     return (
         <div className="min-h-screen flex flex-col">
-            {!hideHeaderFooter && <Navbar />}
+            {showNavbar && <Navbar />}
 
-            <main className={`flex-grow ${!hideHeaderFooter ? "pt-16" : ""}`}>
+            <main className="flex-grow">
                 <Outlet />
             </main>
 
-            {!hideHeaderFooter && <ShopFooter />}
+            {!hideFooter && <ShopFooter />}
         </div>
     );
 }

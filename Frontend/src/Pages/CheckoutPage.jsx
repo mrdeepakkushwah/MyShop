@@ -22,6 +22,52 @@ const CheckoutPage = ({ setCart }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // const placeOrder = async () => {
+    //     if (cart.length === 0) {
+    //         setError("Cart is empty");
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     setError("");
+
+    //     try {
+    //         const token = localStorage.getItem("token");
+
+    //         const response = await axios.post(
+    //             "http://localhost:4000/addOrders",
+    //             {
+    //                 items: cart.map(item => ({
+    //                     productId: item._id || item.id,
+    //                     name: item.name,
+    //                     image: item.image,
+    //                     qty: item.qty,
+    //                     price: item.price,
+    //                 })),
+    //                 totalAmount: totalPrice,
+    //             },
+    //             {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}`,
+    //                 },
+    //             }
+    //         );
+
+    //         // Clear local cart
+    //         localStorage.removeItem("cart");
+    //         setCartState([]);
+    //         if (typeof setCart === "function") {
+    //             setCart([]); // Only call if passed from parent
+    //         }
+
+    //         navigate("/order-success");
+    //     } catch (err) {
+    //         console.error("Checkout error:", err.response?.data || err.message);
+    //         setError(err.response?.data?.message || err.message || "Something went wrong");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
     const placeOrder = async () => {
         if (cart.length === 0) {
             setError("Cart is empty");
@@ -34,6 +80,7 @@ const CheckoutPage = ({ setCart }) => {
         try {
             const token = localStorage.getItem("token");
 
+            // Step 1: Place the order
             const response = await axios.post(
                 "http://localhost:4000/addOrders",
                 {
@@ -53,12 +100,24 @@ const CheckoutPage = ({ setCart }) => {
                 }
             );
 
-            // Clear local cart
+            // Step 2: Update product stock for each item
+            for (const item of cart) {
+                const itemId = item._id || item.id;
+                await axios.put(
+                    `http://localhost:4000/products/${itemId}/update-stock`,
+                    { qtyChange: item.qty },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+            }
+
+            // Step 3: Clear cart
             localStorage.removeItem("cart");
             setCartState([]);
-            if (typeof setCart === "function") {
-                setCart([]); // Only call if passed from parent
-            }
+            if (typeof setCart === "function") setCart([]);
 
             navigate("/order-success");
         } catch (err) {
@@ -68,7 +127,7 @@ const CheckoutPage = ({ setCart }) => {
             setLoading(false);
         }
     };
-
+    
     return (
         <div className="max-w-3xl mx-auto p-6">
             <h2 className="text-2xl font-bold mb-4">Order Summary</h2>

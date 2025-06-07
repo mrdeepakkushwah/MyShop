@@ -1,16 +1,16 @@
+// Load environment variables
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
-const routes = require("./routes/authRoutes");
+const routes = require('./routes/authRoutes');
 const productRoutes = require("./routes/productsRoutes");
 const orderRoutes = require('./routes/order');
 const cors = require("cors");
 const dbConnect = require("./config/dbConnect");
-const dotenv = require("dotenv");
 const path = require("path");
 const errorHandler = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
 
-// Load environment variables
-dotenv.config();
 
 // Validate critical environment variables
 if (!process.env.JWT_SECRET) {
