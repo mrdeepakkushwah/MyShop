@@ -1,16 +1,18 @@
-title: Your Project Title
-description: Description of your project
-baseurl: "" # Set if your project is in a subdirectory
-url: "https://yourusername.github.io" # Replace with your GitHub Pages URL
+title: MyShop
+description: E-commerce app built with React
+baseurl: "" 
+url: "https://mrdeepakkushwah.github.io"
 
 exclude:
   - node_modules
-  - backend/node_modules
+  - backend
   - vendor
   - README.md
   - package-lock.json
   - yarn.lock
   - .gitignore
+  - .vscode
+  - .env
 
 markdown: kramdown
 theme: minima
