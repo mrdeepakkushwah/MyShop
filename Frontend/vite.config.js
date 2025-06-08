@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ command }) => ({
+  base: "./", // ✅ Needed for relative paths on Vercel
   plugins: [react()],
   ...(command === "serve" && {
     server: {
@@ -9,7 +10,7 @@ export default defineConfig(({ command }) => ({
       open: true,
       strictPort: true,
       cors: {
-        origin: "http://localhost:4000", // Your backend URL
+        origin: "http://localhost:4000",
         credentials: true,
       },
     },
