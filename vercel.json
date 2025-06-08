@@ -4,32 +4,30 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
+    
     {
       "src": "/assets/(.*)",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
     },
+    
     {
       "src": "/api/(.*)",
       "dest": "BACKEND_API_URL/api/$1"
     },
+    
+    {
+      "src": "/storybook",
+      "status": 308,
+      "headers": { "Location": "https://your-storybook-url.com" }
+    },
+    
     {
       "src": "/(.*)",
-      "dest": "/index.html",
-      "status": 200
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/storybook",
-      "destination": "https://your-storybook-url.com"
+      "dest": "/index.html"
     }
   ]
 }
