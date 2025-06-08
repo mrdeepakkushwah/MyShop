@@ -1,0 +1,18 @@
+title: MyShop
+description: E-commerce app built with React
+baseurl: "" 
+url: "https://mrdeepakkushwah.github.io"
+
+exclude:
+  - node_modules
+  - backend
+  - vendor
+  - README.md
+  - package-lock.json
+  - yarn.lock
+  - .gitignore
+  - .vscode
+  - .env
+
+markdown: kramdown
+theme: minima
