@@ -1,17 +1,35 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "frontend/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "/frontend/dist/"
+        "distDir": "dist"
       }
     }
   ],
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "BACKEND_API_URL/api/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "status": 200
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/storybook",
+      "destination": "https://your-storybook-url.com"
     }
   ]
 }
