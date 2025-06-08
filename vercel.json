@@ -8,23 +8,19 @@
     }
   ],
   "routes": [
-    
     {
       "src": "/assets/(.*)",
-      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
     },
-    
-    {
-      "src": "/api/(.*)",
-      "dest": "BACKEND_API_URL/api/$1"
-    },
-    
     {
       "src": "/storybook",
       "status": 308,
-      "headers": { "Location": "https://your-storybook-url.com" }
+      "headers": {
+        "Location": "https://your-storybook-url.com"
+      }
     },
-    
     {
       "src": "/(.*)",
       "dest": "/index.html"

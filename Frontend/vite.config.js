@@ -3,12 +3,12 @@ import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
-  base: "/",
-  plugins: [react(),visualizer()],
+  base: "./", // ✅ Important fix
+  plugins: [react(), visualizer()],
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    chunkSizeWarningLimit: 500, // Lower threshold for warnings
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         assetFileNames: "assets/[name]-[hash][extname]",
