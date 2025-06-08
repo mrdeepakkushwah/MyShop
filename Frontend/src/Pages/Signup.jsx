@@ -52,10 +52,8 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/signup",
-        formData, {
-        withCredentials: true,
-      }
+        "https://4m2lmm4x-4000.inc1.devtunnels.ms/signup",
+        formData
       );
 
       if (response.data.message === "User Signup Successfully") {
