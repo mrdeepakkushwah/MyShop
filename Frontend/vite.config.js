@@ -5,6 +5,9 @@ import { visualizer } from "rollup-plugin-visualizer";
 export default defineConfig({
   base: "./", // ✅ Important fix
   plugins: [react(), visualizer()],
+  server:{
+    port:3000,
+  },
   build: {
     outDir: "dist",
     assetsDir: "assets",

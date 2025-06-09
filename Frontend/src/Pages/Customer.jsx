@@ -15,12 +15,12 @@ const Customer = () => {
         const config = token
           ? { headers: { Authorization: `Bearer ${token}` } }
           : {};
-
-        const response = await axios.get("http://localhost:4000/getOrderAdmin", config);
-        console.log(response.data.orders);
+        const response = await axios.get(
+          "http://localhost:4000/getOrderAdmin",
+          config
+        );
         setOrders(response.data.orders || []);
       } catch (err) {
-        console.error(err);
         setError("Failed to load orders.");
       } finally {
         setLoading(false);
@@ -39,13 +39,9 @@ const Customer = () => {
     return matchesStatus && matchesSearch;
   });
 
-  const handleRazorpay = (order) => {
-    console.log("Initiate Razorpay for order:", order._id);
-  };
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
         <div className="w-12 h-12 border-4 border-indigo-500 border-dashed rounded-full animate-spin" />
       </div>
     );
@@ -56,24 +52,27 @@ const Customer = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100">
-      <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8 text-center">
-        All Customer
+    <div className="px-4 py-6 sm:px-6 lg:px-10 max-w-7xl mx-auto bg-gradient-to-b from-white via-gray-50 to-gray-100 min-h-screen">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+        All Customers
       </h1>
 
-      <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+      <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-4">
         {!filteredOrders.length ? (
           <p className="text-gray-500 italic text-center">No matching orders found.</p>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid gap-6 md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-2">
             {filteredOrders.map((order) => (
               <div
                 key={order._id}
-                className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 hover:shadow-md transition-all duration-200"
+                className="bg-gray-50 rounded-xl border border-gray-200 shadow-sm p-4 hover:shadow-md transition-all duration-200"
               >
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-                  <div className="text-sm text-gray-600">
-                    <span className="font-medium">Order Date:</span>{" "}
+                <div className="flex flex-col gap-2 mb-3 text-sm text-gray-600">
+                  <div>
+                    <span className="font-semibold">Order Id:</span> {order._id}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Order Date:</span>{" "}
                     {new Date(order.createdAt).toLocaleString("en-IN", {
                       year: "numeric",
                       month: "short",
@@ -84,12 +83,23 @@ const Customer = () => {
                   </div>
                 </div>
 
-                {/* ✅ Show customer info from userId */}
-                <div className="mb-3 text-sm text-gray-700">
-                  <strong>Name: </strong> {order.userId?.name || "N/A"} <br />
-                  <strong>Email: </strong> {order.userId?.email || "N/A"} <br />
-                  <strong>City: </strong> {order.userId?.city || "N/A"} <br />
-                  <strong>Pincode: </strong> {order.userId?.pincode || "N/A"}
+                <div className="text-sm text-gray-700 space-y-1">
+                  <div>
+                    <span className="font-semibold">Name:</span>{" "}
+                    {order.userId?.name || "N/A"}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Email:</span>{" "}
+                    {order.userId?.email || "N/A"}
+                  </div>
+                  <div>
+                    <span className="font-semibold">City:</span>{" "}
+                    {order.userId?.city || "N/A"}
+                  </div>
+                  <div>
+                    <span className="font-semibold">Pincode:</span>{" "}
+                    {order.userId?.pincode || "N/A"}
+                  </div>
                 </div>
               </div>
             ))}

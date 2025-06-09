@@ -52,7 +52,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "https://4m2lmm4x-4000.inc1.devtunnels.ms/signup",
+        "http://localhost:4000/signup",
         formData
       );
 
