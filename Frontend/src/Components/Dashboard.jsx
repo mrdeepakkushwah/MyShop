@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link, Outlet } from "react-router-dom";
+import { useNavigate, NavLink, Outlet } from "react-router-dom";
 import {
     LogOut,
     LayoutDashboard,
@@ -9,7 +9,7 @@ import {
     Settings,
     PlusCircle,
     Menu,
-    X
+    X,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -30,6 +30,9 @@ const Dashboard = () => {
                 }
             } catch (err) {
                 console.error("Error parsing user data:", err);
+                // Clear corrupted data and redirect
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
                 navigate("/login");
             }
         } else {
@@ -58,6 +61,7 @@ const Dashboard = () => {
             <header className="bg-indigo-700 text-white p-4 flex justify-between items-center sticky top-0 z-50">
                 <div className="flex items-center space-x-3">
                     <button
+                        aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
                         className="md:hidden focus:outline-none"
                         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                     >
@@ -70,7 +74,9 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex items-center space-x-4">
-                    <span className="hidden sm:inline font-medium">Welcome, {(userName).toUpperCase()}</span>
+                    <span className="hidden sm:inline font-medium">
+                        Welcome, {userName.toUpperCase()}
+                    </span>
                     <button
                         onClick={handleLogout}
                         className="bg-indigo-900 hover:bg-indigo-950 px-3 py-1 rounded-md flex items-center gap-2"
@@ -90,14 +96,19 @@ const Dashboard = () => {
                     <ul className="space-y-4">
                         {navItems.map(({ name, to, icon: Icon }) => (
                             <li key={to}>
-                                <Link
+                                <NavLink
                                     to={to}
-                                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-gray-700 hover:text-indigo-600 hover:bg-indigo-100 font-medium"
+                                    className={({ isActive }) =>
+                                        `flex items-center space-x-3 px-3 py-2 rounded-md font-medium ${isActive
+                                            ? "text-indigo-600 bg-indigo-100"
+                                            : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-100"
+                                        }`
+                                    }
                                     onClick={() => setIsSidebarOpen(false)}
                                 >
                                     <Icon size={18} />
                                     <span>{name}</span>
-                                </Link>
+                                </NavLink>
                             </li>
                         ))}
                     </ul>
