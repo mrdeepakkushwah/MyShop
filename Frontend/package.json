@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "start": "node ./index.js"
+    "start": "vite preview"
   },
   "homepage": "https://mrdeepakkushwah.github.io/MyShop",
   "dependencies": {
