@@ -11,8 +11,8 @@ import {
 } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 
-import ProductList from "../components/ProductList";
-import Cart from "../components/Cart";
+import ProductList from "./ProductList";
+import Cart from "./Cart";
 
 const UserDashboard = () => {
     const navigate = useNavigate();
