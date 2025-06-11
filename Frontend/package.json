@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "start": "node ./index.js"
   },
   "homepage": "https://mrdeepakkushwah.github.io/MyShop",
   "dependencies": {
