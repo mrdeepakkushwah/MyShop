@@ -18,9 +18,8 @@ export default defineConfig({
         chunkFileNames: "assets/[name]-[hash].js",
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            // Separate React and ReactDOM into their own chunk
             if (id.includes("react") || id.includes("react-dom")) {
-              return "react-vendor";
+              return "react-vendor"; // ✅ Both bundled together
             }
             if (id.includes("react-router")) {
               return "router";
