@@ -1,7 +1,7 @@
 const Order = require("../models/order");
-const User = require('../models/userModel');
+const User = require("../models/userModel");
 const Product = require("../models/products");
-
+const mongoose = require('mongoose')
 // POST /product/add
 const addProduct = async (req, res) => {
   try {
@@ -233,6 +233,50 @@ const getOrdersAdmin = async (req, res) => {
   }
 };
 
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    console.log("UPDATE ORDER:", orderId, status);
+
+    const validStatuses = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ];
+
+    // Validate orderId
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ error: "Invalid Order ID" });
+    }
+
+    // Validate status value
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: "Invalid status value" });
+    }
+
+    // Find order
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    // Update status and save
+    order.status = status;
+    await order.save();
+
+    return res.status(200).json({
+      message: "Order status updated successfully",
+      order,
+    });
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 const getOrderById = async (req, res) => {
   try {
@@ -244,19 +288,23 @@ const getOrderById = async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: "Order not found." });
     }
- 
-     return res.status(200).json({order});
+
+    return res.status(200).json({ order });
   } catch (err) {
     return res.status(500).json({ message: "Server error", err });
   }
 };
+
 module.exports = {
   addProduct,
   updateStock,
   deleteProductById,
   updateProductById,
   getAllProducts,
-  addOrders,getOrders
-  ,getOrderById,getOrdersAdmin,
-  getProductById
+  addOrders,
+  getOrders,
+  getOrderById,
+  getOrdersAdmin,
+  updateOrderStatus,
+  getProductById,
 };

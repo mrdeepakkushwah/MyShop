@@ -40,12 +40,14 @@ const testimonials = [
   },
 ];
 
+
 const partners = [
-  'https://upload.wikimedia.org/wikipedia/commons/a/ab/Logo_Tesla_Motors.svg',
-  'https://upload.wikimedia.org/wikipedia/commons/4/44/Apple_logo_black.svg',
+  'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/tesla.svg',
+  'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg',
   'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg',
-  'https://upload.wikimedia.org/wikipedia/commons/f/fa/Google_Logo.svg',
+  'https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg',
 ];
+
 
 const About = () => {
   return (

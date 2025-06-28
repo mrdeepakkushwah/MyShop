@@ -90,7 +90,7 @@ const Dashboard = () => {
             <div className="flex flex-1 flex-col md:flex-row">
                 {/* Sidebar */}
                 <nav
-                    className={`bg-white md:block shadow-md w-full md:w-64 p-4 transition-all duration-300 z-40 md:static absolute ${isSidebarOpen ? "block" : "hidden"
+                    className={`bg-white md:block shadow-md w-full md:w-64 p-4 transition-all  sm:sticky top-0 z-0 duration-300 z-40 md:static absolute ${isSidebarOpen ? "block" : "hidden"
                         }`}
                 >
                     <ul className="space-y-4">

@@ -93,3 +93,13 @@
     border-top: 1px solid #d1d5db;
     z-index: 25;
 }
+.loader {
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

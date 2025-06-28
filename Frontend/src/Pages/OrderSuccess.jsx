@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function OrderSuccess() {
+const OrderSuccess = ()=> {
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(3);
 
@@ -27,3 +27,4 @@ export default function OrderSuccess() {
         </div>
     );
 }
+export default OrderSuccess;

@@ -23,7 +23,7 @@ import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccess from "./Pages/OrderSuccess";
 import PrivateRoute from "./context/PrivateRoute";
 
-function App() {
+const  App = ()=> {
   return (
     <Router>
       <Routes>
@@ -107,5 +107,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
