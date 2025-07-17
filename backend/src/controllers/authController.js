@@ -185,19 +185,19 @@ const updateUserData = async (req, res) => {
     const user = await userModel.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const emailExists = await userModel.findOne({
-      email,
-      _id: { $ne: user._id },
-    });
-    if (emailExists)
-      return res.status(409).json({ message: "Email already in use." });
+    // const emailExists = await userModel.findOne({
+    //   email,
+    //   _id: { $ne: user._id },
+    // });
+    // if (emailExists)
+    //   return res.status(409).json({ message: "Email already in use." });
 
-    const contactExists = await userModel.findOne({
-      contact,
-      _id: { $ne: user._id },
-    });
-    if (contactExists)
-      return res.status(409).json({ message: "Contact already in use." });
+    // const contactExists = await userModel.findOne({
+    //   contact,
+    //   _id: { $ne: user._id },
+    // });
+    // if (contactExists)
+    //   return res.status(409).json({ message: "Contact already in use." });
 
     // Apply updates
     user.name = name;

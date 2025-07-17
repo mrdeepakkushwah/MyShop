@@ -8,6 +8,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
 
     const [user, setUser] = useState({
+        _id: "",
         name: "",
         email: "",
         password: "",
@@ -31,6 +32,17 @@ const UserProfile = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (hasEdits) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        };
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [hasEdits]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUser((prev) => ({ ...prev, [name]: value }));
@@ -38,7 +50,7 @@ const UserProfile = () => {
     };
 
     const handleDoubleClick = (field) => {
-        if (field === "email" || field === "contact") return; // Prevent editing these fields
+        if (field === "email" || field === "contact") return;
         setEditingFields((prev) => ({ ...prev, [field]: true }));
     };
 
@@ -52,6 +64,10 @@ const UserProfile = () => {
         try {
             const token = localStorage.getItem("token");
             const { _id, ...userToSend } = user;
+
+            if (!userToSend.password) {
+                delete userToSend.password;
+            }
 
             const { data } = await axios.put(
                 "http://localhost:4000/update-profile",
@@ -97,7 +113,7 @@ const UserProfile = () => {
                             type="button"
                             onClick={() => handleResetField(name)}
                             className="text-sm text-red-500 hover:underline"
-                            title="Reset"
+                            title="Reset this field to original value"
                         >
                             🔄
                         </button>
@@ -116,7 +132,7 @@ const UserProfile = () => {
             <ToastContainer />
             {isRedirecting && (
                 <div className="absolute inset-0 bg-white bg-opacity-80 flex flex-col items-center justify-center z-10 rounded-lg">
-                    <div className="loader ease-linear rounded-full border-4 border-t-4 border-indigo-500 h-10 w-10 mb-4 animate-spin"></div>
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-indigo-600 border-solid mb-4"></div>
                     <p className="text-indigo-600 font-semibold">Redirecting to dashboard...</p>
                 </div>
             )}
@@ -150,7 +166,7 @@ const UserProfile = () => {
                                 type="button"
                                 onClick={() => handleResetField("password")}
                                 className="text-sm text-red-500 hover:underline"
-                                title="Reset"
+                                title="Reset this field to original value"
                             >
                                 🔄
                             </button>
@@ -168,7 +184,8 @@ const UserProfile = () => {
                 {hasEdits && (
                     <button
                         type="submit"
-                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+                        disabled={isRedirecting}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition disabled:opacity-50"
                     >
                         Save Changes
                     </button>
