@@ -85,7 +85,7 @@ const UserDashboard = () => {
 
         try {
             // Call backend to reduce stock
-            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+            await axios.put(`https://myshop-72k8.onrender.com/products/${productId}/update-stock`, {
                 qtyChange: 1,
             });
 
@@ -120,7 +120,7 @@ const UserDashboard = () => {
 
         try {
             // Backend update: decrease or increase stock
-            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+            await axios.put(`https://myshop-72k8.onrender.com/products/${productId}/update-stock`, {
                 qtyChange: qtyDiff,
             });
 
@@ -148,7 +148,7 @@ const UserDashboard = () => {
         if (!item) return;
 
         try {
-            await axios.put(`http://localhost:4000/products/${productId}/update-stock`, {
+            await axios.put(`https://myshop-72k8.onrender.com/products/${productId}/update-stock`, {
                 qtyChange: -item.qty,
             });
 

@@ -18,7 +18,7 @@ const AdminOrders = () => {
         const fetchOrders = async () => {
             const token = localStorage.getItem("token");
             try {
-                const response = await axios.get("http://localhost:4000/getOrderAdmin", {
+                const response = await axios.get("https://myshop-72k8.onrender.com/getOrderAdmin", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setOrders(response.data.orders || []);

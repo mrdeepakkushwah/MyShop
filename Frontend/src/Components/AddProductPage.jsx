@@ -62,7 +62,7 @@ const AddProductPage = () => {
             const sellingPrice = calculateSellingPrice();
 
             try {
-                const res = await axios.post('http://localhost:4000/products/add', {
+                const res = await axios.post('https://myshop-72k8.onrender.com/products/add', {
                     ...product,
                     price: sellingPrice, // final selling price sent to backend
                 });

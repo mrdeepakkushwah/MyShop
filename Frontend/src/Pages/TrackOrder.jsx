@@ -23,7 +23,7 @@ const TrackOrder = () => {
             const token = localStorage.getItem("token");
 
             const response = await axios.get(
-                `http://localhost:4000/getOrderById/${orderId.trim()}`,
+                `https://myshop-72k8.onrender.com/getOrderById/${orderId.trim()}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

@@ -82,7 +82,7 @@ const CheckoutPage = ({ setCart }) => {
 
             // Step 1: Place the order
             const response = await axios.post(
-                "http://localhost:4000/addOrders",
+                "https://myshop-72k8.onrender.com/addOrders",
                 {
                     items: cart.map(item => ({
                         productId: item._id || item.id,

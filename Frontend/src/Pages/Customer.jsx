@@ -16,7 +16,7 @@ const Customer = () => {
           ? { headers: { Authorization: `Bearer ${token}` } }
           : {};
         const response = await axios.get(
-          "http://localhost:4000/getOrderAdmin",
+          "https://myshop-72k8.onrender.com/getOrderAdmin",
           config
         );
         setOrders(response.data.orders || []);

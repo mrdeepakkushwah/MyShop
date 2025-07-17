@@ -11,7 +11,7 @@ const MyOrders = () => {
         const fetchOrders = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get("http://localhost:4000/getOrders", {
+                const response = await axios.get("https://myshop-72k8.onrender.com/getOrders", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setOrders(Array.isArray(response.data) ? response.data : response.data.orders || []);

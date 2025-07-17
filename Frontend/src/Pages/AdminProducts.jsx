@@ -15,7 +15,7 @@ const AdminProducts = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await axios.get('http://localhost:4000/products');
+                const res = await axios.get('https://myshop-72k8.onrender.com/products');
                 setProducts(Array.isArray(res.data.products) ? res.data.products : []);
             } catch (error) {
                 console.error('Failed to fetch products', error);

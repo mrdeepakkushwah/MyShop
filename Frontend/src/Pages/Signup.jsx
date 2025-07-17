@@ -52,7 +52,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:4000/signup",
+        "https://myshop-72k8.onrender.com/signup",
         formData
       );
 

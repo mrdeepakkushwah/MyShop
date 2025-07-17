@@ -25,7 +25,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post("http://localhost:4000/login", formData, { credentials: true });
+            const res = await axios.post("https://myshop-72k8.onrender.com/login", formData, { credentials: true });
             const { token, user } = res.data;
 
             if (token) localStorage.setItem("token", token);

@@ -70,7 +70,7 @@ const UserProfile = () => {
             }
 
             const { data } = await axios.put(
-                "http://localhost:4000/update-profile",
+                "https://myshop-72k8.onrender.com/update-profile",
                 userToSend,
                 {
                     headers: { Authorization: `Bearer ${token}` },

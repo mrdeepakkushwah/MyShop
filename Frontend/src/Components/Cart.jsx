@@ -45,7 +45,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
 
             try {
                 // Fetch current stock from backend
-                const { data } = await axios.get(`http://localhost:4000/products/getProductById/${itemId}`);
+                const { data } = await axios.get(`https://myshop-72k8.onrender.com/products/getProductById/${itemId}`);
                 console.log(data)
                 const currentStock = data.product.stock;
 

@@ -21,7 +21,7 @@ const EditProfile = () => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await axios.get("http://localhost:4000/api/user/me", {
+                const res = await axios.get("https://myshop-72k8.onrender.com/user/me", {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
