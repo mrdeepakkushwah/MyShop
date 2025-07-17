@@ -28,7 +28,7 @@ const Login = () => {
             const res = await axios.post(
                 "https://myshop-72k8.onrender.com/login",
                 formData,
-                { withCredentials: true } // changed from `credentials: true`
+                { withCredentials: true }
             );
 
             const { token, user } = res.data;
@@ -45,7 +45,7 @@ const Login = () => {
                 navigate(user?.role === "admin" ? "/admin" : "/user/dashboard");
             }, 1000);
         } catch (err) {
-            const msg = err.response?.data?.message || "Login failed. Please check your credentials or try again later.";
+            const msg = err.response?.data?.message || "Login failed. Check your credentials or try again later.";
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -56,54 +56,59 @@ const Login = () => {
         <>
             <ToastContainer position="top-right" autoClose={2000} />
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4">
-                <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-xl shadow-2xl transition-all duration-300">
-                    <h2 className="text-3xl font-extrabold text-center text-indigo-700 dark:text-indigo-400 mb-8">
+                <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-xl shadow-xl transition duration-300">
+                    <h2 className="text-3xl font-bold text-center text-indigo-700 dark:text-indigo-400 mb-6">
                         Welcome Back 👋
                     </h2>
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Email
                             </label>
                             <input
                                 type="email"
+                                id="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                                autoComplete="email"
                                 placeholder="you@example.com"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             />
                         </div>
 
                         {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Password
                             </label>
                             <input
                                 type="password"
+                                id="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                                autoComplete="current-password"
                                 placeholder="••••••••"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             />
                         </div>
 
                         {/* Role */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Select Role
                             </label>
                             <select
+                                id="role"
                                 name="role"
                                 value={formData.role}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-gray-50 dark:bg-gray-900 dark:text-white"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             >
                                 <option value="" disabled>Choose a role</option>
                                 <option value="user">User</option>
@@ -116,8 +121,8 @@ const Login = () => {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-2 px-4 text-white rounded-lg font-semibold text-lg transition ${loading
-                                    ? "bg-indigo-300 cursor-not-allowed"
-                                    : "bg-indigo-600 hover:bg-indigo-700"
+                                ? "bg-indigo-300 cursor-not-allowed"
+                                : "bg-indigo-600 hover:bg-indigo-700"
                                 }`}
                         >
                             {loading ? "Logging in..." : "Login"}

@@ -98,7 +98,7 @@ const signup = async (req, res) => {
 // ---------- Login ----------
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password ,role} = req.body;
 
     if (!email || !password || !role) {
       return res
