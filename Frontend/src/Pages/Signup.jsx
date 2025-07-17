@@ -83,11 +83,10 @@ const Signup = () => {
     } catch (error) {
       console.error("Signup error:", {
         message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data,
-      });
-      
+        stack: error.stack,
+        config: error.config,
+        isAxiosError: error.isAxiosError,});
+      console.error("Response data:", error?.response?.data);
       toast.error(
         error?.response?.data?.message ||
         "Signup failed. Please check internet connection. Try again.",
