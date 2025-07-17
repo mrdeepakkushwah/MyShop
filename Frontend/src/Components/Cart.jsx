@@ -63,7 +63,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                 }
 
                 // Update backend stock
-                await axios.put(`http://localhost:4000/products/${itemId}/update-stock`, {
+                await axios.put(`https://myshop-72k8.onrender.com/products/${itemId}/update-stock`, {
                     qtyChange: qtyDiff,
                 });
 

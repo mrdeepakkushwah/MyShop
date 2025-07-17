@@ -22,6 +22,7 @@ import AddProductPage from "./Components/AddProductPage";
 import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccess from "./Pages/OrderSuccess";
 import PrivateRoute from "./context/PrivateRoute";
+import AdminUsers from "./Pages/AdminUsers";
 
 const  App = ()=> {
   return (
@@ -99,6 +100,7 @@ const  App = ()=> {
           <Route path="orders" element={<AdminOrders />} />
           <Route path="settings" element={<AdminSettings />} />
           <Route path="product/add" element={<AddProductPage />} />
+          <Route path="users" element={<AdminUsers />} />
         </Route>
 
         {/* Catch-all */}

@@ -9,14 +9,14 @@ const {
   getProductById,
 } = require('../controllers/productsControllers');
 
-const { authMiddleware, adminOnly } = require('../middlewares/authMiddleware');
+const { authenticate, authorizeRoles } = require('../middlewares/authMiddleware');
 
 // Secure routes
-router.post("/products/add", addProduct);
+router.post("/products/add",authenticate, addProduct);
 router.get("/products/getProductById/:id",getProductById);
 router.get("/products",getAllProducts)
-router.put("/products/:id", updateProductById);
-router.delete("/products/:id", deleteProductById);
-router.put("/products/:id/update-stock", updateStock);
+router.put("/products/:id",authenticate, updateProductById);
+router.delete("/products/:id",authenticate, deleteProductById);
+router.put("/products/:id/update-stock",authenticate, updateStock);
 
 module.exports = router;

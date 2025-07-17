@@ -43,7 +43,7 @@ const UserDashboard = () => {
 
         const fetchProducts = async () => {
             try {
-                const { data } = await axios.get("http://localhost:4000/products");
+                const { data } = await axios.get("https://myshop-72k8.onrender.com/products");
                 setProducts(data.products);
             } catch (error) {
                 toast.error("Failed to load products.");
