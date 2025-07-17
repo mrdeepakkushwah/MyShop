@@ -33,7 +33,7 @@ const generateAccessToken = (user) => {
 // ---------- Signup ----------
 const signup = async (req, res) => {
   try {
-    const { name, email, password, contact, city, pincode, dob, gender, role } =
+    const { name, email, password, contact, city, pincode, dob, gender } =
       req.body;
 
     if (!name || !email || !password || !contact) {
@@ -78,7 +78,6 @@ const signup = async (req, res) => {
       pincode,
       dob,
       gender,
-      role,
     });
 
     const token = generateAccessToken(newUser);
@@ -99,7 +98,7 @@ const signup = async (req, res) => {
 // ---------- Login ----------
 const loginUser = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password || !role) {
       return res

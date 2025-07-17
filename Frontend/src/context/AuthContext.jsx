@@ -7,12 +7,16 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        const storedToken = localStorage.getItem("token");
+        try {
+            const storedUser = localStorage.getItem("user");
+            const storedToken = localStorage.getItem("token");
 
-        if (storedUser && storedToken) {
-            setUser(JSON.parse(storedUser));
-            setToken(storedToken);
+            if (storedUser && storedToken) {
+                setUser(JSON.parse(storedUser));
+                setToken(storedToken);
+            }
+        } catch (error) {
+            console.error("Failed to restore user from localStorage", error);
         }
     }, []);
 

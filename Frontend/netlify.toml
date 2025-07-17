@@ -1,12 +1,14 @@
 [build]
-  base = "frontend"
   command = "npm run build"
-  publish = "frontend/dist"
+  publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "18.19.1"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 3000
+
+[context.production.environment]
+  NODE_ENV = "production"

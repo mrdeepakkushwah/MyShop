@@ -25,30 +25,27 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post("https://myshop-72k8.onrender.com/login", formData, { credentials: true });
+            const res = await axios.post(
+                "https://myshop-72k8.onrender.com/login",
+                formData,
+                { withCredentials: true } // changed from `credentials: true`
+            );
+
             const { token, user } = res.data;
 
             if (token) localStorage.setItem("token", token);
             if (user) {
                 localStorage.setItem("user", JSON.stringify(user));
-                if (user.role) {
-                    localStorage.setItem("role", user.role);
-                }
+                if (user.role) localStorage.setItem("role", user.role);
             }
 
             toast.success("Login successful!");
 
             setTimeout(() => {
-                if (user.role === "admin") {
-                    navigate("/admin");
-                    // window.location.reload(); // force reload for ProtectedRoute
-                } else {
-                    navigate("/user/dashboard");
-                    // window.location.reload(); // force reload for ProtectedRoute
-                }
+                navigate(user?.role === "admin" ? "/admin" : "/user/dashboard");
             }, 1000);
         } catch (err) {
-            const msg = err.response?.data?.message || "Login failed. Please check internet connection.  Try again.";
+            const msg = err.response?.data?.message || "Login failed. Please check your credentials or try again later.";
             toast.error(msg);
         } finally {
             setLoading(false);
@@ -108,21 +105,19 @@ const Login = () => {
                                 required
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-gray-50 dark:bg-gray-900 dark:text-white"
                             >
-                                <option value="" disabled>
-                                    Choose a role
-                                </option>
+                                <option value="" disabled>Choose a role</option>
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
                             </select>
                         </div>
 
-                        {/* Submit */}
+                        {/* Submit Button */}
                         <button
                             type="submit"
                             disabled={loading}
                             className={`w-full py-2 px-4 text-white rounded-lg font-semibold text-lg transition ${loading
-                                ? "bg-indigo-300 cursor-not-allowed"
-                                : "bg-indigo-600 hover:bg-indigo-700"
+                                    ? "bg-indigo-300 cursor-not-allowed"
+                                    : "bg-indigo-600 hover:bg-indigo-700"
                                 }`}
                         >
                             {loading ? "Logging in..." : "Login"}
@@ -132,10 +127,7 @@ const Login = () => {
                     {/* Signup Link */}
                     <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                         Don’t have an account?{" "}
-                        <Link
-                            to="/signup"
-                            className="text-indigo-600 font-medium hover:underline"
-                        >
+                        <Link to="/signup" className="text-indigo-600 font-medium hover:underline">
                             Sign Up
                         </Link>
                     </p>
