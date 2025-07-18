@@ -2,8 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./Components/MainLayout";
 import './app.css';
-import './index.css'; // Ensure this is imported for global styles
-import './index.css'
 
 import Home from "./Pages/Home";
 import About from "./Pages/About";
@@ -26,7 +24,6 @@ import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccess from "./Pages/OrderSuccess";
 import PrivateRoute from "./context/PrivateRoute";
 import AdminUsers from "./Pages/AdminUsers";
-import { AuthContext } from './context/AuthContext';
 
 const  App = ()=> {
   return (
