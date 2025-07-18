@@ -1,7 +1,7 @@
 // Load environment variables
 import { config } from "dotenv";
 config();
-console.log("JWT_SECRET:",process.env.JWT_SECRET);
+// console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 import express from "express";
 import cors from "cors";
@@ -17,7 +17,7 @@ import dbConnect from "./config/dbConnect.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { authenticate, authorizeRoles } from "./middlewares/authMiddleware.js";
 
-// ✅ Validate critical environment variables
+// Validate env
 if (
   !process.env.JWT_SECRET ||
   !process.env.MONGODB_URI ||
@@ -27,68 +27,61 @@ if (
   process.exit(1);
 }
 
-// ✅ Handle __dirname in ES Modules
+// Setup __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Initialize app
+// Initialize app
 const app = express();
 
-// ✅ Connect to MongoDB
+// Connect DB
 dbConnect();
 
-// ✅ Middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
-    credentials: true,
-  })
-);
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
-// ✅ Serve static files (React build)
-app.use(express.static(path.join(__dirname, "Frontend", "dist")));
+// ✅ Serve React static files — correct path
+const frontendBuildPath = path.resolve(__dirname, "../Frontend/dist");
+app.use(express.static(frontendBuildPath));
 
-// ✅ SPA fallback route (after static files)
-app.get("*", (_, res) => {
-  res.sendFile(
-    path.join(__dirname, "Frontend", "dist", "index.html"),
-    (err) => {
-      if (err) {
-        console.error("Error sending index.html:", err);
-        res.status(500).send("Internal Server Error");
-      }
-    }
-  );
-});
-
-// ✅ API Routes
+// API Routes
 app.use("/auth", routes);
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 
-// ✅ Admin test route
+// / ✅ React SPA fallback route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendBuildPath,"index.html"), (err) => {
+    if (err) {
+      console.error("Error sending index.html:", err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+});
+
+// Admin test
 app.get("/admin/test", authenticate, authorizeRoles("admin"), (req, res) => {
   res.status(200).json({ message: "✅ Admin access granted.", user: req.user });
 });
 
-// ✅ Welcome route
+// Welcome
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to MyShop API 🎉" });
 });
 
-// ✅ 404 Route Handler
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found." });
 });
 
-// ✅ Global Error Handler Middleware
+// Global error handler
 app.use(errorHandler);
 
-// ✅ Start server
-const PORT = process.env.PORT || 3500;
+// Start server
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`✅ Server is running at http://localhost:${PORT}`);
 });

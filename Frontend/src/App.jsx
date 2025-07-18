@@ -23,8 +23,11 @@ import CheckoutPage from "./Pages/CheckoutPage";
 import OrderSuccess from "./Pages/OrderSuccess";
 import PrivateRoute from "./context/PrivateRoute";
 import AdminUsers from "./Pages/AdminUsers";
+import { AuthContext } from './context/AuthContext';
 
 const  App = ()=> {
+  console.log("AuthContext:", AuthContext); // should NOT be undefined
+
   return (
     <Router>
       <Routes>
@@ -107,6 +110,7 @@ const  App = ()=> {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
+    
   );
 }
 export default App;
