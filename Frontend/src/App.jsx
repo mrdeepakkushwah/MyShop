@@ -1,7 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./Components/MainLayout";
-import './app.css';
+// import './app.css';
+import './index.css';
+
 
 import Home from "./Pages/Home";
 import About from "./Pages/About";
