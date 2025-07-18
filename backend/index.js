@@ -7,6 +7,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 // Import routes and middleware
 import routes from "./routes/authRoutes.js";
@@ -35,15 +36,25 @@ const app = express();
 // Connect to MongoDB
 dbConnect();
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 
-// Serve frontend static files
+// Serve frontend static files if they exist
 const frontendBuildPath = path.resolve(__dirname, "../Frontend/dist");
-app.use(express.static(frontendBuildPath));
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+} else {
+  console.warn("⚠️ Frontend build not found. Skipping static file serving.");
+}
 
 // API Routes
 app.use("/auth", routes);
@@ -60,8 +71,12 @@ app.get("/api", (req, res) => {
   res.status(200).json({ message: "Welcome to MyShop API 🎉" });
 });
 
-// Fallback route: Serve React SPA for any other route
-app.get("*", (req, res) => {
+// Serve React SPA for unmatched GET requests only
+app.get("*", (req, res, next) => {
+  if (req.method !== "GET") return next();
+  if (!fs.existsSync(path.join(frontendBuildPath, "index.html"))) {
+    return res.status(404).json({ error: "Frontend not built yet." });
+  }
   res.sendFile(path.join(frontendBuildPath, "index.html"), (err) => {
     if (err) {
       console.error("Error sending index.html:", err);
@@ -82,4 +97,6 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log("🌍 Environment:", process.env.NODE_ENV || "development");
+  console.log("🎯 Client URL:", process.env.CLIENT_URL);
 });

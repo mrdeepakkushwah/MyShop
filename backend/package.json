@@ -1,18 +1,18 @@
 {
-  "name": "backend",
+  "name": "myshop-fullstack",
   "version": "1.0.0",
-  "description": "A Node.js backend with Express, MongoDB, JWT, and validation",
+  "description": "Fullstack app with Node.js backend and Vite + React frontend",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon backend/index.js",
-    "start": "nodemon backend/index.js",
-    "build": "npm install && npm install --prefix ./Frontend && npm run build --prefix ./Frontend"
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend"
   },
   "author": "Deepak Kushwah",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^3.0.2",
+    "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
