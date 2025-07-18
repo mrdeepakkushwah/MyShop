@@ -18,3 +18,13 @@ services:
         sync: false
       - key: NODE_ENV
         value: production
+
+  - type: web
+    name: myshop-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: serve -s dist
+    envVars:
+      - key: NODE_ENV
+        value: production
