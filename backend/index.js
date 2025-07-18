@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin:process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
@@ -47,12 +47,12 @@ app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 
 // Admin protected test route
-app.get("/admin/test", authenticate, authorizeRoles("admin"), (req, res) => {
+app.get("/admin", authenticate, authorizeRoles("admin"), (req, res) => {
   res.status(200).json({ message: "✅ Admin access granted.", user: req.user });
 });
 
 // API welcome route
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to MyShop API 🎉" });
 });
 

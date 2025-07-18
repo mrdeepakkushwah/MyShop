@@ -29,8 +29,6 @@ import AdminUsers from "./Pages/AdminUsers";
 import { AuthContext } from './context/AuthContext';
 
 const  App = ()=> {
-  console.log("AuthContext:", AuthContext); // should NOT be undefined
-
   return (
     <Router>
       <Routes>
