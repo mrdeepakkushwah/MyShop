@@ -2,13 +2,19 @@ services:
   - type: web
     name: myshop-backend
     env: node
+    buildCommand: cd backend && npm install
+    startCommand: node index.js
     rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
     envVars:
-      - key: PORT
-        value: 4000
-      - key: MONGO_URI
-        value: your_mongo_connection_string
+      - key: MONGODB_URI
+        sync: false
       - key: JWT_SECRET
-        value: your_jwt_secret
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRES_IN
+        sync: false
+      - key: REFRESH_TOKEN_EXPIRES_IN
+        sync: false
+      - key: NODE_ENV
+        value: production
