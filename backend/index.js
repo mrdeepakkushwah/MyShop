@@ -42,9 +42,9 @@ app.use(
 );
 
 // API Routes
-app.use("/auth", routes);
-app.use("/products", productRoutes);
-app.use("/orders", orderRoutes);
+app.use("/", routes);
+app.use("/", productRoutes);
+app.use("/", orderRoutes);
 
 // Admin protected test route
 app.get("/admin", authenticate, authorizeRoles("admin"), (req, res) => {
