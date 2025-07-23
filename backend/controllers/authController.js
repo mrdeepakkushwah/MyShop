@@ -103,12 +103,12 @@ export const signup = async (req, res) => {
 // ---------- Login ----------
 export const loginUser = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password} = req.body;
 
-    if (!email || !password || !role) {
+    if (!email || !password) {
       return res
         .status(400)
-        .json({ message: "Email, password, and role are required." });
+        .json({ message: "Email, password are required." });
     }
 
     const existingUser = await User.findOne({ email });
