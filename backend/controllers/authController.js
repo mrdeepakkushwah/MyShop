@@ -188,6 +188,32 @@ export const getUserData = async (req, res) => {
       .json({ message: "Failed to fetch user data", error: error.message });
   }
 };
+export const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const userExists = await User.findById(userId);
+
+    if (!userExists) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await User.deleteOne({ _id: userId });
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return res.status(500).json({
+      message: "User deletion failed",
+      error: error.message,
+    });
+  }
+};
+
 
 // ---------- Update User Data ----------
 export const updateUserData = async (req, res) => {

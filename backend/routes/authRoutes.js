@@ -8,6 +8,7 @@ import {
   updateUserData,
   getUserData,
   ForgetPassword,
+  deleteUser,
 } from "../controllers/authController.js";
 
 const router = express.Router();
@@ -17,8 +18,9 @@ router.post("/signup", signup);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("/forget-password",ForgetPassword)
-
 // Protected Routes
+router.delete("/admin/delete-user",authenticate,authorizeRoles('admin'),deleteUser);
+router.get('/admin/users',authenticate,getUserData);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
 
