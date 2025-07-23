@@ -15,7 +15,7 @@ router.post("/addOrders", authenticate, authorizeRoles("admin"), addOrders);
 router.get("/getOrders", authenticate, authorizeRoles("admin"), getOrders);
 router.get("/getOrderById/:id", authenticate, getOrderById);
 router.get(
-  "/getOrderAdmin",
+  "/admin/getorders",
   authenticate,
   authorizeRoles("admin"),
   getOrdersAdmin

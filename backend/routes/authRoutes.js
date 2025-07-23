@@ -10,6 +10,7 @@ import {
   ForgetPassword,
   deleteUser,
 } from "../controllers/authController.js";
+import { getOrdersAdmin } from "../controllers/ordersController.js";
 
 const router = express.Router();
 
@@ -23,5 +24,6 @@ router.delete("/admin/delete-user",authenticate,authorizeRoles('admin'),deleteUs
 router.get('/admin/users',authenticate,getUserData);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
+// router.get('/admin/getorders',getOrdersAdmin)
 
 export default router;
