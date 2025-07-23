@@ -60,7 +60,7 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Invalid date of birth format." });
     }
 
-    const existingUser = await userModel.findOne({
+    const existingUser = await User.findOne({
       $or: [{ email }, { contact }],
     });
 
