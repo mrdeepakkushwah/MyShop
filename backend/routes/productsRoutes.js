@@ -12,7 +12,7 @@ import {
 import { authenticate, authorizeRoles } from "../middlewares/authMiddleware.js";
 
 // Secure routes
-router.post("/products/add", authenticate, addProduct);
+router.post("/products/add",addProduct);
 router.get("/products/getProductById/:id", getProductById);
 router.get("/products", getAllProducts);
 router.put("/products/:id", authenticate, updateProductById);
