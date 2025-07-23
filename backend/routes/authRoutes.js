@@ -14,7 +14,7 @@ const router = express.Router();
 
 // Public Routes
 router.post("/signup", signup);
-router.post("/login", authenticate, loginUser);
+router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 router.post("forget-password",ForgetPassword)
 
