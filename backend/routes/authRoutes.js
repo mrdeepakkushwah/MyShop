@@ -7,14 +7,16 @@ import {
   logoutUser,
   updateUserData,
   getUserData,
+  ForgetPassword,
 } from "../controllers/authController.js";
 
 const router = express.Router();
 
 // Public Routes
 router.post("/signup", signup);
-router.post("/login", loginUser);
+router.post("/login", authenticate, loginUser);
 router.post("/logout", logoutUser);
+router.post("forget-password", authenticate,ForgetPassword)
 
 // Protected Routes
 router.get("/me", authenticate, getUserData);

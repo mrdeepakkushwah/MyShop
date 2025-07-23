@@ -136,6 +136,38 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const ForgetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required." });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(403)
+        .json({ message: "User not found. Please enter a correct email." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Password updated successfully." });
+  } catch (error) {
+    console.error("ForgetPassword error:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
 // ---------- Logout ----------
 export const logoutUser = (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
