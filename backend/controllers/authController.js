@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
+import User from '../models/userModel';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "15m";
@@ -56,9 +56,14 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Invalid gender value." });
     }
 
+    if (dob && isNaN(Date.parse(dob))) {
+      return res.status(400).json({ message: "Invalid date of birth format." });
+    }
+
     const existingUser = await userModel.findOne({
       $or: [{ email }, { contact }],
     });
+
     if (existingUser) {
       const conflictField = existingUser.email === email ? "Email" : "Contact";
       return res
@@ -68,7 +73,7 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    const newUser = await userModel.create({
       name,
       email,
       password: hashedPassword,
@@ -77,6 +82,7 @@ export const signup = async (req, res) => {
       pincode,
       dob,
       gender,
+      role: "user",
     });
 
     const token = generateAccessToken(newUser);

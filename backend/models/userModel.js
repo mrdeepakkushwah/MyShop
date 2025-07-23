@@ -6,11 +6,11 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     contact: { type: String, required: true, unique: true },
-    city: String,
-    pincode: String,
-    dob: String,
-    gender: String,
-    role: { type: String, default: "user" },
+    city: { type: String},
+    pincode: {type:String},
+    dob: {type:String},
+    gender: { type:String},
+    role:{ type: String, default: "user" },
   },
   { timestamps: true }
 );
