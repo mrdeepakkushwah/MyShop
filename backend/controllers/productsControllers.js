@@ -98,11 +98,19 @@ const updateStock = async (req, res) => {
   const { id } = req.params;
   const { qtyChange } = req.body;
 
+  // Validate qtyChange
+  const parsedQty = Number(qtyChange);
+  if (isNaN(parsedQty) || parsedQty <= 0) {
+    return res.status(400).json({ message: "Invalid quantity value" });
+  }
+
   try {
     const product = await Product.findById(id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-    const newStock = product.stock - qtyChange;
+    const newStock = product.stock - parsedQty;
 
     if (newStock < 0) {
       return res.status(400).json({ message: "Not enough stock available" });
@@ -117,6 +125,7 @@ const updateStock = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // DELETE /product/:id
 const deleteProductById = async (req, res) => {

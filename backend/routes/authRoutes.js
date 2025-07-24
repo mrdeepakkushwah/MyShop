@@ -24,6 +24,6 @@ router.delete("/admin/delete-user",authenticate,authorizeRoles('admin'),deleteUs
 router.get('/admin/users',authenticate,getUserData);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
-// router.get('/admin/getorders',getOrdersAdmin)
+router.get('/admin/getorders',authenticate,authorizeRoles("admin"),getOrdersAdmin)
 
 export default router;

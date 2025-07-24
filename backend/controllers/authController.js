@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import User from '../models/userModel.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "15m";
+const ACCESS_TOKEN_EXPIRES_IN =process.env.ACCESS_TOKEN_EXPIRES_IN || "1d";
 
 // Utility: safely pick user fields for response
 const getSafeUser = (user) => ({
@@ -20,11 +20,11 @@ const getSafeUser = (user) => ({
 
 // Generate access token only
 const generateAccessToken = (user) => {
-  if (!JWT_SECRET) {
+  if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not defined in environment variables.");
   }
 
-  return jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
+  return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: ACCESS_TOKEN_EXPIRES_IN,
   });
 };

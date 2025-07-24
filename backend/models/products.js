@@ -6,7 +6,7 @@ const productSchema = new Schema(
     price: { type: Number, required: true },
     mrp: { type: Number, required: true },
     discount: { type: Number, required: true },
-    stock: { type: Number, required: true },
+    stock: { type: Number, required: true  ,min:0},
     image: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
