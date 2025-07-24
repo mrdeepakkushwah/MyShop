@@ -7,6 +7,7 @@ import {
   logoutUser,
   updateUserData,
   getUserData,
+  getAllUsers,
   ForgetPassword,
   deleteUser,
 } from "../controllers/authController.js";
@@ -21,7 +22,7 @@ router.post("/logout", logoutUser);
 router.post("/forget-password",ForgetPassword)
 // Protected Routes
 router.delete("/admin/delete-user",authenticate,authorizeRoles('admin'),deleteUser);
-router.get('/admin/users',authenticate,getUserData);
+router.get('/admin/users',authenticate,getAllUsers);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
 router.get('/admin/getorders',authenticate,authorizeRoles("admin"),getOrdersAdmin)

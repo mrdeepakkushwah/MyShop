@@ -180,7 +180,7 @@ export const getUserData = async (req, res) => {
     const user = await User.findById(userId).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    return res.status(200).json({ user: getSafeUser(user) });
+    return res.status(200).json({ message:"All Users Get Successfully", users: getSafeUser(user) });
   } catch (error) {
     console.error("Get user data error:", error);
     return res
@@ -211,6 +211,19 @@ export const deleteUser = async (req, res) => {
       message: "User deletion failed",
       error: error.message,
     });
+  }
+};
+
+// --------- Get all Uesrs -----------
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    return res.status(200).json({ message: "All users fetched", users }); // ✅ Now it's an array
+  } catch (error) {
+    console.error("Get all users error:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch users", error: error.message });
   }
 };
 
