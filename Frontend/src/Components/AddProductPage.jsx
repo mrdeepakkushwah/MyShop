@@ -101,7 +101,7 @@ const AddProductPage = () => {
 
     return (
         <div className="relative max-w-4xl mx-auto p-6 bg-white shadow-2xl rounded-xl mt-10 mb-10 transition-all animate-fade-in">
-            <ToastContainer />
+            {/* <ToastContainer /> */}
 
             {submittedProduct && (
                 <button

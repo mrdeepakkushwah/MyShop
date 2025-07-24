@@ -21,6 +21,7 @@ const AdminOrders = () => {
                 const response = await axios.get("https://myshop-72k8.onrender.com/getOrderAdmin", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                  console.log(response)
                 setOrders(response.data.orders || []);
             } catch (err) {
                 toast.error("Failed to load orders");
@@ -62,7 +63,7 @@ const AdminOrders = () => {
 
         try {
             await axios.put(
-                `http://localhost:4000/orders/${orderId}/status`,
+                `https://myshop-72k8.onrender.com/orders/${orderId}/status`,
                 { status: newStatus },
                 {
                     headers: { Authorization: `Bearer ${token}` },

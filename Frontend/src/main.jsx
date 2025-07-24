@@ -1,14 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { AuthProvider } from "./context/AuthContext"; // ✅ Path must be correct
-import './index.css'; // Ensure this is imported for global styles
+import { AuthProvider } from "./context/AuthContext"; // ✅ Make sure path is valid
+import "./index.css"; // ✅ Global styles
+import { ToastContainer } from "react-toastify";
 
+const rootElement = document.getElementById("root");
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
-  </React.StrictMode>
-);
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <AuthProvider>
+        <App />
+        <ToastContainer position="top-right" autoClose={2000} />
+      </AuthProvider>
+    </React.StrictMode>
+  );
+} else {
+  console.error("❌ No root element found in HTML!");
+}

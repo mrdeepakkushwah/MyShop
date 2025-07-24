@@ -3,11 +3,14 @@ import { Navigate } from "react-router-dom";
 import { AuthContext } from "./AuthContext";
 
 const PrivateRoute = ({ children, allowedRoles }) => {
-    const { authUser } = useContext(AuthContext);
+    const { user, loading } = useContext(AuthContext);
 
-    if (!authUser) return <Navigate to="/login" />;
-    if (allowedRoles && !allowedRoles.includes(authUser.role)) {
-        return <Navigate to="/unauthorized" />;
+    if (loading) return <div className="text-center mt-10">Loading...</div>;
+
+    if (!user) return <Navigate to="/login" replace />;
+
+    if (allowedRoles && !allowedRoles.includes(user.role)) {
+        return <Navigate to="/unauthorized" replace />;
     }
 
     return children;

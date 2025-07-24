@@ -31,7 +31,7 @@ const AdminProducts = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete this product?")) return;
         try {
-            await axios.delete(`http://localhost:4000/products/${id}`);
+            await axios.delete(`https://myshop-72k8.onrender.com/products/${id}`);
             setProducts(prev => prev.filter(p => p._id !== id));
             toast.success("Product deleted successfully!");
         } catch (error) {
@@ -87,7 +87,7 @@ const AdminProducts = () => {
                 stock: Number(form.stock),
             };
 
-            await axios.put(`http://localhost:4000/products/${editingProduct._id}`, updatedProduct);
+            await axios.put(`https://myshop-72k8.onrender.com/products/${editingProduct._id}`, updatedProduct);
             setProducts(prev =>
                 prev.map(p => (p._id === editingProduct._id ? { ...p, ...updatedProduct } : p))
             );

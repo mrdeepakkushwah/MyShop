@@ -1,26 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthContext } from "../context/AuthContext"; // make sure path is correct
 
 const Login = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({ email: "", password: "", role: "" });
+    const { login: loginContext } = useContext(AuthContext);
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.role) {
-            toast.error("Please select a role.");
-            return;
-        }
 
         setLoading(true);
 
@@ -33,28 +33,41 @@ const Login = () => {
 
             const { token, user } = res.data;
 
-            if (token) localStorage.setItem("token", token);
-            if (user) {
+            if (token && user) {
+                loginContext(user, token); // context login
                 localStorage.setItem("user", JSON.stringify(user));
-                if (user.role) localStorage.setItem("role", user.role);
+                toast.success("Login successful!");
+                navigate('/admin')
+            } else {
+                throw new Error("Invalid login response");
             }
-
-            toast.success("Login successful!");
-
-            setTimeout(() => {
-                navigate(user?.role === "admin" ? "/admin" : "/user/dashboard");
-            }, 1000);
         } catch (err) {
-            const msg = err.response?.data?.message || "Login failed. Check your credentials or try again later.";
+            const msg =
+                err.response?.data?.message ||
+                "Login failed. Check your credentials or try again later.";
             toast.error(msg);
         } finally {
             setLoading(false);
         }
     };
 
+    // ✅ Redirect after successful login
+    
+    useEffect(() => {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        if (storedUser) {
+            if (storedUser.role === "admin") {
+                navigate("/admin");
+            } else if (storedUser.role === "user") {
+                navigate("/user/dashboard");
+            }
+        }
+    }, [navigate]);
+    
+
     return (
         <>
-            <ToastContainer position="top-right" autoClose={2000} />
+            <ToastContainer  />
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4">
                 <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-xl shadow-xl transition duration-300">
                     <h2 className="text-3xl font-bold text-center text-indigo-700 dark:text-indigo-400 mb-6">
@@ -96,33 +109,23 @@ const Login = () => {
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             />
                         </div>
-
-                        {/* Role */}
-                        <div>
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Select Role
-                            </label>
-                            <select
-                                id="role"
-                                name="role"
-                                value={formData.role}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
+                        <div className="text-right text-sm mt-1">
+                            <Link
+                                to="/forget-password"
+                                className="text-indigo-600 hover:underline dark:text-indigo-400"
                             >
-                                <option value="" disabled>Choose a role</option>
-                                <option value="user">User</option>
-                                <option value="admin">Admin</option>
-                            </select>
+                                Forgot Password?
+                            </Link>
                         </div>
 
                         {/* Submit Button */}
+
                         <button
                             type="submit"
                             disabled={loading}
                             className={`w-full py-2 px-4 text-white rounded-lg font-semibold text-lg transition ${loading
-                                ? "bg-indigo-300 cursor-not-allowed"
-                                : "bg-indigo-600 hover:bg-indigo-700"
+                                    ? "bg-indigo-300 cursor-not-allowed"
+                                    : "bg-indigo-600 hover:bg-indigo-700"
                                 }`}
                         >
                             {loading ? "Logging in..." : "Login"}

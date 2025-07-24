@@ -104,7 +104,7 @@ const CheckoutPage = ({ setCart }) => {
             for (const item of cart) {
                 const itemId = item._id || item.id;
                 await axios.put(
-                    `http://localhost:4000/products/${itemId}/update-stock`,
+                    `https://myshop-72k8.onrender.com/products/${itemId}/update-stock`,
                     { qtyChange: item.qty },
                     {
                         headers: {

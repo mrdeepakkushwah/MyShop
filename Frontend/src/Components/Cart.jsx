@@ -1,3 +1,4 @@
+// Enhanced, responsive, accessible, and production-ready Cart Component
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
@@ -6,71 +7,43 @@ import { toast } from "react-toastify";
 
 const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
     const navigate = useNavigate();
-
-    // Calculate total price on the fly from current cart state
-    const calculatedTotalPrice = cart.reduce(
-        (sum, item) => sum + item.price * item.qty,
-        0
-    );
-
-    // States for removal animation and quantity update loading
     const [removingIds, setRemovingIds] = useState([]);
     const [qtyChangedId, setQtyChangedId] = useState(null);
     const [qtyLoadingId, setQtyLoadingId] = useState(null);
-
-    // Ref to store timers for debounce per item
     const qtyTimers = useRef({});
 
-    // Debounced quantity change handler
     const handleQtyChange = (itemId, newQty) => {
         if (newQty < 1) return;
+        if (qtyTimers.current[itemId]) clearTimeout(qtyTimers.current[itemId]);
 
-        // Clear any existing timer for this item
-        if (qtyTimers.current[itemId]) {
-            clearTimeout(qtyTimers.current[itemId]);
-        }
-
-        // Set loading state for this input
         setQtyLoadingId(itemId);
 
-        // Start debounce timer (300ms)
         qtyTimers.current[itemId] = setTimeout(async () => {
-            // Find the item from cart
             const itemIndex = cart.findIndex((i) => i._id === itemId || i.id === itemId);
-            if (itemIndex === -1) {
-                setQtyLoadingId(null);
-                return;
-            }
+            if (itemIndex === -1) return setQtyLoadingId(null);
+
             const item = cart[itemIndex];
 
             try {
-                // Fetch current stock from backend
-                const { data } = await axios.get(`https://myshop-72k8.onrender.com/products/getProductById/${itemId}`);
-                console.log(data)
+                const { data } = await axios.get(
+                    `https://myshop-72k8.onrender.com/products/getProductById/${itemId}`
+                );
                 const currentStock = data.product.stock;
 
                 if (newQty > currentStock) {
                     toast.warning("Quantity exceeds available stock.");
-                    setQtyLoadingId(null);
                     return;
                 }
 
-                // Calculate difference in qty
                 const qtyDiff = newQty - item.qty;
-                if (qtyDiff === 0) {
-                    setQtyLoadingId(null);
-                    return;
-                }
+                if (qtyDiff === 0) return;
 
-                // Update backend stock
-                await axios.put(`https://myshop-72k8.onrender.com/products/${itemId}/update-stock`, {
-                    qtyChange: qtyDiff,
-                });
+                await axios.put(
+                    `https://myshop-72k8.onrender.com/products/${itemId}/update-stock`,
+                    { qtyChange: qtyDiff }
+                );
 
-                // Update qty in parent state (also pass updated stock if needed)
                 updateQty(itemId, newQty, currentStock);
-
-                // Show brief highlight for qty change
                 setQtyChangedId(itemId);
                 setTimeout(() => setQtyChangedId(null), 500);
             } catch (err) {
@@ -82,14 +55,15 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
         }, 300);
     };
 
-    // Remove item with animation
     const onRemove = (itemId) => {
-        setRemovingIds((ids) => [...ids, itemId]);
+        setRemovingIds((prev) => [...prev, itemId]);
         setTimeout(() => {
             removeItem(itemId);
-            setRemovingIds((ids) => ids.filter((id) => id !== itemId));
+            setRemovingIds((prev) => prev.filter((id) => id !== itemId));
         }, 300);
     };
+
+    const calculatedTotalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
     return (
         <div className="flex flex-col h-full max-h-[80vh] min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
@@ -97,7 +71,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                 <p className="text-center text-gray-500 mt-20">Your cart is empty.</p>
             ) : (
                 <>
-                    <ul className="flex-1 overflow-y-auto scroll-smooth space-y-4 mb-4 px-1 sm:px-3">
+                    <ul className="flex-1 overflow-y-auto scroll-smooth space-y-4 mb-4 px-2">
                         {cart.map((item) => {
                             const itemId = item.id || item._id;
                             const isRemoving = removingIds.includes(itemId);
@@ -107,18 +81,12 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                             return (
                                 <li
                                     key={itemId}
-                                    className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 border-b pb-3
-                    transform transition-all duration-300 ease-in-out
-                    ${isRemoving
-                                            ? "opacity-0 -translate-x-10 h-0 p-0 overflow-hidden"
-                                            : "opacity-100"
-                                        }
-                    ${isQtyChanged ? "bg-yellow-100" : ""}
-                  `}
+                                    className={`flex flex-col sm:flex-row items-center sm:items-start gap-4 border-b pb-3 transition-all duration-300 ease-in-out ${isRemoving ? "opacity-0 -translate-x-10 h-0 p-0 overflow-hidden" : "opacity-100"
+                                        } ${isQtyChanged ? "bg-yellow-100" : ""}`}
                                 >
                                     <img
-                                        src={item.image}
-                                        alt={item.name}
+                                        src={item.image || "/no-image.png"}
+                                        alt={item.name || "Product image"}
                                         className="w-full max-w-[150px] h-28 object-cover rounded-md mx-auto sm:mx-0"
                                     />
                                     <div className="flex-1 w-full">
@@ -128,7 +96,6 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                                         <p className="text-indigo-600 font-bold text-center sm:text-left">
                                             {formatPrice(item.price)}
                                         </p>
-
                                         <div className="flex justify-center sm:justify-start items-center mt-2 space-x-2">
                                             <label htmlFor={`qty-${itemId}`} className="text-sm">
                                                 Qty:
@@ -143,7 +110,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                                                     const val = Math.max(1, parseInt(e.target.value, 10) || 1);
                                                     handleQtyChange(itemId, val);
                                                 }}
-                                                className={`w-16 border rounded px-2 py-1 text-center ${isQtyLoading ? "opacity-60 cursor-not-allowed" : ""
+                                                className={`w-16 border rounded px-2 py-1 text-center transition ${isQtyLoading ? "opacity-60 cursor-not-allowed" : ""
                                                     }`}
                                             />
                                         </div>
@@ -151,7 +118,6 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                                             In stock: {item.stock}
                                         </p>
                                     </div>
-
                                     <button
                                         type="button"
                                         onClick={() => onRemove(itemId)}
@@ -166,18 +132,12 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                             );
                         })}
                     </ul>
-
-                    <div className="border-t pt-4 px-2 sm:px-3">
+                    <div className="border-t pt-4 px-3">
                         <p className="text-lg font-bold text-gray-900 mb-4 text-center sm:text-right">
                             Total: {formatPrice(calculatedTotalPrice)}
                         </p>
-
                         <button
-                            onClick={() =>
-                                navigate("/checkout", {
-                                    state: { cart, totalPrice: calculatedTotalPrice },
-                                })
-                            }
+                            onClick={() => navigate("/checkout", { state: { cart, totalPrice: calculatedTotalPrice } })}
                             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md transition"
                         >
                             Proceed to Checkout

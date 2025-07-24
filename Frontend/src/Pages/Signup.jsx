@@ -55,12 +55,14 @@ const Signup = () => {
         "https://myshop-72k8.onrender.com/signup",
         formData
       );
-
+        console.log(response)
       if (response.data.message === "User Signup Successfully") {
         toast.success("Signup Successful!", {
           position: "top-right",
           autoClose: 1500,
         });
+        localStorage.setItem('token',response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         setTimeout(() => {
           setFormData({
             name: "",
@@ -90,10 +92,6 @@ const Signup = () => {
       toast.error(
         error?.response?.data?.message ||
         "Signup failed. Please check internet connection. Try again.",
-        {
-          position: "top-right",
-          autoClose: 3000,
-        }
       );
     } finally {
       setLoading(false);
@@ -158,27 +156,6 @@ const Signup = () => {
                 <option value="other">Other</option>
               </select>
             </div>
-
-            {/* <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Role
-              </label>
-              <select
-                name="role"
-                id="role"
-                value={formData.role}
-                onChange={changeHandler}
-                className="mt-1 w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select Role</option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div> */}
 
             <div>
               <label

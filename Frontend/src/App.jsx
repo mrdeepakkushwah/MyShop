@@ -9,6 +9,7 @@ import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
+import ForgetPassword from "./Pages/ForgetPassword";
 import Customer from "./Pages/Customer";
 import Dashboard from "./Components/Dashboard"; // Admin layout dashboard
 import UserDashboard from "./Components/UserDashboard";
@@ -37,6 +38,7 @@ const  App = ()=> {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forget-password" element={<ForgetPassword/>}/>
           <Route path="/signup" element={<Signup />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccess />} />
