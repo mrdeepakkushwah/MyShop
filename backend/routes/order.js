@@ -11,7 +11,7 @@ import {
 const router = Router();
 import { authenticate, authorizeRoles } from "../middlewares/authMiddleware.js";
 
-router.post("/addOrders", authenticate, authorizeRoles("admin"), addOrders);
+router.post("/addOrders", authenticate, addOrders);
 router.get("/getOrders", authenticate, authorizeRoles("admin"), getOrders);
 router.get("/getOrderById/:id", authenticate, getOrderById);
 router.get(
