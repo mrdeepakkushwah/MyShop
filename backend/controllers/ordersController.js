@@ -26,7 +26,23 @@ const addOrders = async (req, res) => {
       .status(400)
       .json({ message: "Shipping details are incomplete." });
   }
-
+  if (totalAmount === undefined || totalAmount <= 0) {
+    return res.status(400).json({ message: "Invalid total amount." });
+  }
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: "User not authenticated." });
+  }
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ message: "Items must be an array." });
+  } 
+  if (items.some((item) => !item._id || !item.name || !item.qty || !item.price)) {
+    return res
+      .status(400)
+      .json({ message: "Each item must have an id, name, quantity, and price." });
+  }
+  if (items.some((item) => item.qty <= 0)) {
+    return res.status(400).json({ message: "Quantity must be greater than zero." });
+  }
   try {
     // Validate stock
     for (const item of items) {
@@ -74,7 +90,7 @@ const addOrders = async (req, res) => {
     console.error("Error placing order:", error.message);
     return res
       .status(500)
-      .json({ message: "Something went wrong while placing the order." });
+      .json({ message: "Internal Server error , while placing the order." });
   }
 };
 
