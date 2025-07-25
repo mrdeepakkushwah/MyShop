@@ -1,6 +1,35 @@
+
+import { Types } from "mongoose";
+import Product from "../models/product.js";
 import Order from "../models/order.js";
 import User from "../models/userModel.js";
-import { Types } from "mongoose";
+// POST /order
+// const addOrders = async (req, res) => {
+//   const { items, totalAmount } = req.body;
+
+//   if (!items || items.length === 0) {
+//     return res.status(400).json({ message: "No items in the order." });
+//   }
+
+//   try {
+//     const newOrder = new Order({
+//       userId: req.user._id,
+//       items,
+//       totalAmount,
+//     });
+
+//     await newOrder.save();
+
+//     return res.status(201).json({
+//       message: "Order placed successfully",
+//       order: newOrder,
+//     });
+//   } catch (error) {
+  //     console.error("Error placing order:", error);
+  //     return res.status(500).json({ message: "Internal Server Error" });
+  //   }
+  // };
+  
 
 // POST /order
 const addOrders = async (req, res) => {
@@ -11,6 +40,26 @@ const addOrders = async (req, res) => {
   }
 
   try {
+    // Validate and update stock
+    for (const item of items) {
+      const product = await Product.findById(item._id || item.id);
+
+      if (!product) {
+        return res
+          .status(404)
+          .json({ message: `Product not found: ${item.name}` });
+      }
+
+      if (product.stock < item.qty) {
+        return res
+          .status(400)
+          .json({ message: `Insufficient stock for ${product.name}` });
+      }
+
+      product.stock -= item.qty;
+      await product.save();
+    }
+
     const newOrder = new Order({
       userId: req.user._id,
       items,
@@ -28,6 +77,7 @@ const addOrders = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 // GET /orders
 const getOrders = async (req, res) => {
@@ -73,6 +123,7 @@ const getOrdersAdmin = async (req, res) => {
     return res.status(200).json({
       message: "Orders fetched successfully",
       orders,
+      userId:orders.map(order => order.userId._id),
       count: orders.length,
     });
   } catch (error) {
