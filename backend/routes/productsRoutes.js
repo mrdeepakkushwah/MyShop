@@ -37,7 +37,6 @@ router.delete(
 router.put(
   "/products/:id/update-stock",
   authenticate,
-  authorizeRoles("admin"),
   updateStock
 );
 
