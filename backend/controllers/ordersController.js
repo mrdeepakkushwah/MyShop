@@ -1,6 +1,6 @@
 
 import { Types } from "mongoose";
-import Product from "../models/product.js";
+import Product from "../models/products.js";
 import Order from "../models/order.js";
 import User from "../models/userModel.js";
 // POST /order
