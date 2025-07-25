@@ -33,16 +33,31 @@ import User from "../models/userModel.js";
 
 // POST /order
 const addOrders = async (req, res) => {
-  const { items, totalAmount } = req.body;
+  const { items, totalAmount, shipping } = req.body;
 
   if (!items || items.length === 0) {
-    return res.status(400).json({ message: "No items in the order." });
+    return res.status(400).json({ message: "Cart is empty." });
+  }
+
+  if (
+    !shipping ||
+    !shipping.name ||
+    !shipping.address ||
+    !shipping.city ||
+    !shipping.zip
+  ) {
+    return res
+      .status(400)
+      .json({ message: "Shipping information is incomplete." });
   }
 
   try {
-    // Validate and update stock
+    const updatedItems = [];
+
+    // Validate stock and update
     for (const item of items) {
-      const product = await Product.findById(item._id || item.id);
+      const productId = item._id || item.id;
+      const product = await Product.findById(productId);
 
       if (!product) {
         return res
@@ -51,19 +66,34 @@ const addOrders = async (req, res) => {
       }
 
       if (product.stock < item.qty) {
-        return res
-          .status(400)
-          .json({ message: `Insufficient stock for ${product.name}` });
+        return res.status(400).json({
+          message: `Only ${product.stock} left in stock for ${product.name}`,
+        });
       }
 
       product.stock -= item.qty;
       await product.save();
+
+      updatedItems.push({
+        productId: product._id,
+        name: product.name,
+        qty: item.qty,
+        price: item.price,
+      });
     }
 
     const newOrder = new Order({
       userId: req.user._id,
-      items,
+      items: updatedItems,
       totalAmount,
+      shipping: {
+        name: shipping.name,
+        address: shipping.address,
+        city: shipping.city,
+        zip: shipping.zip,
+      },
+      status: "Processing",
+      placedAt: new Date(),
     });
 
     await newOrder.save();
@@ -73,8 +103,10 @@ const addOrders = async (req, res) => {
       order: newOrder,
     });
   } catch (error) {
-    console.error("Error placing order:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Order placement error:", error);
+    return res
+      .status(500)
+      .json({ message: "Something went wrong while placing the order." });
   }
 };
 

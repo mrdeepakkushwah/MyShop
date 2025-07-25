@@ -24,10 +24,23 @@ const orderSchema = new Schema(
       type: Number,
       required: true,
     },
+    shipping: {
+      name: { type: String, required: true },
+      address: { type: String, required: true },
+      city: { type: String, required: true },
+      zip: { type: String, required: true },
+    },
     status: {
       type: String,
       enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
+    },
+    placedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    estimatedDelivery: {
+      type: Date,
     },
   },
   { timestamps: true }
