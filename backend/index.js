@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 // Import routes and middleware
 import routes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productsRoutes.js";
-import orderRoutes from "./routes/order.js";
+import orderRoutes from './routes/orderRoutes.js';
 import dbConnect from "./config/dbConnect.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { authenticate, authorizeRoles } from "./middlewares/authMiddleware.js";

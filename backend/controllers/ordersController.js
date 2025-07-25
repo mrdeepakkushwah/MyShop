@@ -1,7 +1,6 @@
-
 import { Types } from "mongoose";
-import Product from "../models/products.js";
-import Order from "../models/order.js";
+import Product from "../models/productsModel.js";
+import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 // POST /order
 // const addOrders = async (req, res) => {
@@ -25,11 +24,10 @@ import User from "../models/userModel.js";
 //       order: newOrder,
 //     });
 //   } catch (error) {
-  //     console.error("Error placing order:", error);
-  //     return res.status(500).json({ message: "Internal Server Error" });
-  //   }
-  // };
-  
+//     console.error("Error placing order:", error);
+//     return res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 
 // POST /order
 const addOrders = async (req, res) => {
@@ -110,7 +108,6 @@ const addOrders = async (req, res) => {
   }
 };
 
-
 // GET /orders
 const getOrders = async (req, res) => {
   try {
@@ -155,7 +152,7 @@ const getOrdersAdmin = async (req, res) => {
     return res.status(200).json({
       message: "Orders fetched successfully",
       orders,
-      userId:orders.map(order => order.userId._id),
+      userId: orders.map((order) => order.userId._id),
       count: orders.length,
     });
   } catch (error) {

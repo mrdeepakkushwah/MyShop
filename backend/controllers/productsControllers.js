@@ -1,4 +1,4 @@
-import Product from "../models/products.js";
+import Product from "../models/productsModel.js";
 
 // POST /product/add
 const addProduct = async (req, res) => {
@@ -125,7 +125,6 @@ const updateStock = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 
 // DELETE /product/:id
 const deleteProductById = async (req, res) => {
