@@ -2,39 +2,17 @@ import { Types } from "mongoose";
 import Product from "../models/productsModel.js";
 import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
-// POST /order
-// const addOrders = async (req, res) => {
-//   const { items, totalAmount } = req.body;
 
-//   if (!items || items.length === 0) {
-//     return res.status(400).json({ message: "No items in the order." });
-//   }
-
-//   try {
-//     const newOrder = new Order({
-//       userId: req.user._id,
-//       items,
-//       totalAmount,
-//     });
-
-//     await newOrder.save();
-
-//     return res.status(201).json({
-//       message: "Order placed successfully",
-//       order: newOrder,
-//     });
-//   } catch (error) {
-//     console.error("Error placing order:", error);
-//     return res.status(500).json({ message: "Internal Server Error" });
-//   }
-// };
-
-// POST /order
+// POST /order/place
+/** * Place a new order
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */   
 const addOrders = async (req, res) => {
   const { items, totalAmount, shipping } = req.body;
 
   if (!items || items.length === 0) {
-    return res.status(400).json({ message: "Cart is empty." });
+    return res.status(400).json({ message: "No items in the order." });
   }
 
   if (
@@ -46,16 +24,13 @@ const addOrders = async (req, res) => {
   ) {
     return res
       .status(400)
-      .json({ message: "Shipping information is incomplete." });
+      .json({ message: "Shipping details are incomplete." });
   }
 
   try {
-    const updatedItems = [];
-
-    // Validate stock and update
+    // Validate stock
     for (const item of items) {
-      const productId = item._id || item.id;
-      const product = await Product.findById(productId);
+      const product = await Product.findById(item._id || item.id);
 
       if (!product) {
         return res
@@ -64,34 +39,29 @@ const addOrders = async (req, res) => {
       }
 
       if (product.stock < item.qty) {
-        return res.status(400).json({
-          message: `Only ${product.stock} left in stock for ${product.name}`,
-        });
+        return res
+          .status(400)
+          .json({ message: `Insufficient stock for ${product.name}` });
       }
 
       product.stock -= item.qty;
       await product.save();
-
-      updatedItems.push({
-        productId: product._id,
-        name: product.name,
-        qty: item.qty,
-        price: item.price,
-      });
     }
+
+    const estimatedDelivery = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000); // 6 days from now
 
     const newOrder = new Order({
       userId: req.user._id,
-      items: updatedItems,
+      items: items.map((item) => ({
+        productId: item._id || item.id,
+        name: item.name,
+        image: item.image,
+        qty: item.qty,
+        price: item.price,
+      })),
       totalAmount,
-      shipping: {
-        name: shipping.name,
-        address: shipping.address,
-        city: shipping.city,
-        zip: shipping.zip,
-      },
-      status: "Processing",
-      placedAt: new Date(),
+      shipping,
+      estimatedDelivery,
     });
 
     await newOrder.save();
@@ -101,12 +71,13 @@ const addOrders = async (req, res) => {
       order: newOrder,
     });
   } catch (error) {
-    console.error("Order placement error:", error);
+    console.error("Error placing order:", error.message);
     return res
       .status(500)
       .json({ message: "Something went wrong while placing the order." });
   }
 };
+
 
 // GET /orders
 const getOrders = async (req, res) => {
