@@ -292,7 +292,7 @@ export const updateUserData = async (req, res) => {
 
 export const AdminUserUpdateById = async (req, res) => { 
   try {
-    const { userId } = req.params;
+    const { userId } = req.params.id;
     const { name, role } = req.body;
 
     if (!userId || !name || !role) {

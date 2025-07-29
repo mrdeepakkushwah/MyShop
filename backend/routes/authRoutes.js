@@ -27,5 +27,12 @@ router.get('/admin/users',authenticate,getAllUsers);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
 router.get('/admin/getorders',authenticate,authorizeRoles("admin"),getOrdersAdmin)
-router.put("/admin/update-user/:id", authenticate, authorizeRoles("admin"), AdminUserUpdateById);
+// router.patch("/admin/update-user/:id", authenticate, authorizeRoles("admin"), AdminUserUpdateById);
+router.patch(
+  "/admin/update-user/:userId",
+  authenticate,
+  authorizeRoles("admin"),
+  AdminUserUpdateById
+);
+
 export default router;
