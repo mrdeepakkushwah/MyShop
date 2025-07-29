@@ -1,4 +1,5 @@
 // Load environment variables
+import { Server} from "socket.io";
 import { config } from "dotenv";
 config();
 
@@ -7,7 +8,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import http from "http";
-import { Server } from "socket.io";
 
 // Import routes and middleware
 import routes from "./routes/authRoutes.js";
