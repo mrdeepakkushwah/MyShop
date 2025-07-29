@@ -296,7 +296,10 @@ export const AdminUserUpdateById = async (req, res) => {
   try {
     const userId = req.params.id; // ✅ Correct way to access :id from route
     const { name, role } = req.body;
-    const io = req.app.get("io");
+    const io = req.app.get("io"); // Get the io instance from the app
+    if (!io) {
+      return res.status(500).json({ message: "WebSocket server not initialized." });
+    }
 
     if (!userId || !name || !role) {
       return res
