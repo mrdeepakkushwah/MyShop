@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import {
-    FaShoppingCart,
-    FaUserCircle,
-} from "react-icons/fa";
+import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import "react-toastify/dist/ReactToastify.css";
 
 import ProductList from "./ProductList";
@@ -54,15 +51,11 @@ const UserDashboard = () => {
         const productId = product._id || product.id;
         const existing = cart.find((item) => (item._id || item.id) === productId);
 
-        if (product.stock <= 0) {
+        if (!product.stock || product.stock <= 0) {
             return toast.warn("Out of stock!");
         }
 
         try {
-            await axios.put(`https://myshop-72k8.onrender.com/products/${productId}/update-stock`, {
-                qtyChange: 1,
-            });
-
             const updatedCart = existing
                 ? cart.map((item) =>
                     (item._id || item.id) === productId
@@ -74,7 +67,8 @@ const UserDashboard = () => {
             setCart(updatedCart);
             localStorage.setItem("cart", JSON.stringify(updatedCart));
             toast.success(`${product.name} added to cart`);
-        } catch {
+        } catch (error) {
+            console.error("Error updating stock:", error);
             toast.error("Unable to add item. Possibly out of stock.");
         }
     };
@@ -128,6 +122,11 @@ const UserDashboard = () => {
         navigate("/login");
     };
 
+    const handleNavigate = (path) => {
+        setProfileOpen(false);
+        navigate(path);
+    };
+
     const formatPrice = (price) =>
         new Intl.NumberFormat("en-IN", {
             style: "currency",
@@ -155,20 +154,17 @@ const UserDashboard = () => {
                     </button>
 
                     {profileOpen && (
-                        <div className="absolute top-10 right-0 w-48 bg-white text-black border rounded shadow-lg z-50">
-                            <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+                        <div className="absolute top-12 right-0 w-48 bg-white text-black border rounded shadow-lg z-50 animate-slide-in">
+                            <button onClick={() => handleNavigate("/profile")} className="w-full text-left px-4 py-2 hover:bg-gray-100">
                                 Account
-                            </Link>
-                            <Link to="/orders" className="block px-4 py-2 hover:bg-gray-100">
+                            </button>
+                            <button onClick={() => handleNavigate("/orders")} className="w-full text-left px-4 py-2 hover:bg-gray-100">
                                 My Orders
-                            </Link>
-                            <Link to="/track-order" className="block px-4 py-2 hover:bg-gray-100">
+                            </button>
+                            <button onClick={() => handleNavigate("/track-order")} className="w-full text-left px-4 py-2 hover:bg-gray-100">
                                 Track Order
-                            </Link>
-                            <button
-                                onClick={handleLogout}
-                                className="w-full text-left px-4 py-2 hover:bg-red-100"
-                            >
+                            </button>
+                            <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-red-100">
                                 Logout
                             </button>
                         </div>
@@ -195,13 +191,11 @@ const UserDashboard = () => {
 
                 {cartVisible && (
                     <>
-                        {/* Overlay */}
                         <div
                             onClick={() => setCartVisible(false)}
                             className="fixed inset-0 bg-black bg-opacity-30 z-40 md:hidden"
                         />
-                        {/* Cart Sidebar */}
-                        <div className="fixed top-14 right-0 w-80 max-h-[85vh] bg-white z-50 p-4 border-l shadow-xl overflow-y-auto rounded-l-xl">
+                        <div className="fixed top-14 right-0 w-80 max-h-[85vh] bg-white z-50 p-4 border-l shadow-xl overflow-y-auto rounded-l-xl animate-slide-in">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-bold text-indigo-600">🛒 Your Cart</h2>
                                 <button

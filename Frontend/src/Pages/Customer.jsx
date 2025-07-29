@@ -19,7 +19,8 @@ const Customer = () => {
           "https://myshop-72k8.onrender.com/getOrderAdmin",
           config
         );
-        setOrders(response.data.orders || []);
+        console.log(response)
+        setOrders(response.data.orders|| []);
       } catch (err) {
         setError("Failed to load orders.");
       } finally {

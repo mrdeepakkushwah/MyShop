@@ -35,14 +35,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
                     return;
                 }
 
-                const qtyDiff = newQty - item.qty;
-                if (qtyDiff === 0) return;
-
-                await axios.put(
-                    `https://myshop-72k8.onrender.com/products/${itemId}/update-stock`,
-                    { qtyChange: qtyDiff }
-                );
-
+                // ✅ Remove backend update — just update locally
                 updateQty(itemId, newQty, currentStock);
                 setQtyChangedId(itemId);
                 setTimeout(() => setQtyChangedId(null), 500);
@@ -54,6 +47,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
             }
         }, 300);
     };
+    
 
     const onRemove = (itemId) => {
         setRemovingIds((prev) => [...prev, itemId]);
@@ -64,6 +58,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
     };
 
     const calculatedTotalPrice = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    console.log(cart);
 
     return (
         <div className="flex flex-col h-full max-h-[80vh] min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
@@ -72,6 +67,7 @@ const Cart = ({ cart, updateQty, removeItem, formatPrice }) => {
             ) : (
                 <>
                     <ul className="flex-1 overflow-y-auto scroll-smooth space-y-4 mb-4 px-2">
+                    
                         {cart.map((item) => {
                             const itemId = item.id || item._id;
                             const isRemoving = removingIds.includes(itemId);

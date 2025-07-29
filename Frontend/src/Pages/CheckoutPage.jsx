@@ -21,57 +21,21 @@ const CheckoutPage = ({ setCart }) => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [shipping, setShipping] = useState({
+        name: "",
+        address: "",
+        city: "",
+        zip: "",
+    });
 
-    // const placeOrder = async () => {
-    //     if (cart.length === 0) {
-    //         setError("Cart is empty");
-    //         return;
-    //     }
+    const handleChange = (e) => {
+        setShipping({ ...shipping, [e.target.name]: e.target.value });
+    };
 
-    //     setLoading(true);
-    //     setError("");
-
-    //     try {
-    //         const token = localStorage.getItem("token");
-
-    //         const response = await axios.post(
-    //             "http://localhost:4000/addOrders",
-    //             {
-    //                 items: cart.map(item => ({
-    //                     productId: item._id || item.id,
-    //                     name: item.name,
-    //                     image: item.image,
-    //                     qty: item.qty,
-    //                     price: item.price,
-    //                 })),
-    //                 totalAmount: totalPrice,
-    //             },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${token}`,
-    //                 },
-    //             }
-    //         );
-
-    //         // Clear local cart
-    //         localStorage.removeItem("cart");
-    //         setCartState([]);
-    //         if (typeof setCart === "function") {
-    //             setCart([]); // Only call if passed from parent
-    //         }
-
-    //         navigate("/order-success");
-    //     } catch (err) {
-    //         console.error("Checkout error:", err.response?.data || err.message);
-    //         setError(err.response?.data?.message || err.message || "Something went wrong");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
     const placeOrder = async () => {
-        if (cart.length === 0) {
-            setError("Cart is empty");
-            return;
+        if (cart.length === 0) return setError("Cart is empty");
+        if (!shipping.name || !shipping.address || !shipping.city || !shipping.zip) {
+            return setError("Please fill all shipping fields");
         }
 
         setLoading(true);
@@ -80,18 +44,39 @@ const CheckoutPage = ({ setCart }) => {
         try {
             const token = localStorage.getItem("token");
 
-            // Step 1: Place the order
-            const response = await axios.post(
-                "https://myshop-72k8.onrender.com/addOrders",
+            if (!token) {
+                setError("You must be logged in to place an order.");
+                setLoading(false);
+                return;
+            }
+
+            // Step 1: Update stock for all products
+            await Promise.all(
+                cart.map((item) => {
+                    const productId = item._id || item.id;
+                    if (!productId) {
+                        console.warn("Missing productId for stock update", item);
+                        return;
+                    }
+                    return axios.put(
+                        `https://myshop-72k8.onrender.com/products/${productId}/update-stock`,
+                        { qtyChange: item.qty },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+                })
+            );
+
+            // Step 2: Save the order to backend
+         const res =  await axios.post(
+                "https://myshop-72k8.onrender.com/orders/place",
                 {
-                    items: cart.map(item => ({
-                        productId: item._id || item.id,
-                        name: item.name,
-                        image: item.image,
-                        qty: item.qty,
-                        price: item.price,
-                    })),
-                    totalAmount: totalPrice,
+                    items: cart,
+                    shipping,
+                    totalAmount:totalPrice,
                 },
                 {
                     headers: {
@@ -99,62 +84,105 @@ const CheckoutPage = ({ setCart }) => {
                     },
                 }
             );
-
-            // Step 2: Update product stock for each item
-            for (const item of cart) {
-                const itemId = item._id || item.id;
-                await axios.put(
-                    `https://myshop-72k8.onrender.com/products/${itemId}/update-stock`,
-                    { qtyChange: item.qty },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-            }
-
-            // Step 3: Clear cart
+            console.log(res);
             localStorage.removeItem("cart");
             setCartState([]);
             if (typeof setCart === "function") setCart([]);
-
             navigate("/order-success");
         } catch (err) {
             console.error("Checkout error:", err.response?.data || err.message);
-            setError(err.response?.data?.message || err.message || "Something went wrong");
+            setError(err.response?.data?.message || "Checkout failed.");
         } finally {
             setLoading(false);
         }
     };
-    
+
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+        <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8 animate-fade-in">
+            <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+                Checkout
+            </h2>
 
-            {error && <p className="text-red-600 mb-2">{error}</p>}
+            {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-            <ul className="space-y-4 border-b pb-4 mb-4">
-                {cart.map((item) => (
-                    <li key={item._id || item.id} className="flex justify-between items-start">
-                        <div>
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-gray-500">
-                                Qty: {item.qty} × ₹{item.price}
+            {/* Shipping Address */}
+            <div className="bg-white p-6 rounded-lg shadow-md mb-8 transition hover:shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                    Shipping Information
+                </h3>
+                <div className="grid sm:grid-cols-2 gap-4">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        className="input-style"
+                        value={shipping.name}
+                        onChange={handleChange}
+                    />
+                    <input
+                        type="text"
+                        name="address"
+                        placeholder="Address"
+                        className="input-style"
+                        value={shipping.address}
+                        onChange={handleChange}
+                    />
+                    <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        className="input-style"
+                        value={shipping.city}
+                        onChange={handleChange}
+                    />
+                    <input
+                        type="text"
+                        name="zip"
+                        placeholder="ZIP Code"
+                        className="input-style"
+                        value={shipping.zip}
+                        onChange={handleChange}
+                    />
+                </div>
+            </div>
+
+            {/* Cart Items */}
+            <div className="bg-white p-6 rounded-lg shadow-md mb-6 transition hover:shadow-lg">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4">Order Summary</h3>
+                <ul className="divide-y divide-gray-200 mb-4">
+                    {cart.map((item) => (
+                        <li
+                            key={item._id || item.id}
+                            className="py-4 flex justify-between items-center"
+                        >
+                            <div>
+                                <p className="font-medium text-gray-800">{item.name}</p>
+                                <p className="text-sm text-gray-500">
+                                    Qty: {item.qty} × ₹{item.price}
+                                </p>
+                            </div>
+                            <p className="text-lg font-semibold text-gray-700">
+                                ₹{item.qty * item.price}
                             </p>
-                        </div>
-                        <p className="font-semibold">₹{item.qty * item.price}</p>
-                    </li>
-                ))}
-            </ul>
+                        </li>
+                    ))}
+                </ul>
 
-            <p className="text-xl font-bold mb-6 text-right">Total: ₹{totalPrice}</p>
+                <div className="text-right">
+                    <p className="text-lg font-bold text-gray-800 mb-1">
+                        Total: ₹{totalPrice.toFixed(2)}
+                    </p>
+                    <p className="text-sm text-gray-500 italic animate-pulse">
+                        Delivery estimate: 5-7 business days
+                    </p>
+                </div>
+            </div>
 
+            {/* Place Order Button */}
             <button
                 onClick={placeOrder}
                 disabled={loading}
-                className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded transition ${loading ? "opacity-70 cursor-not-allowed" : ""
-                    }`}
+                className={`w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-medium transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
                 {loading ? "Placing Order..." : "Place Order"}
             </button>

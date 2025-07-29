@@ -1,28 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from "../context/AuthContext"; // make sure path is correct
+import axios from "axios";
+import {
+    loginStart,
+    loginSuccess,
+    loginFailure,
+} from '../redux/authSlice';
 
 const Login = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { login: loginContext } = useContext(AuthContext);
+    const { user, loading } = useSelector((state) => state.auth);
 
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
-    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        setLoading(true);
+        dispatch(loginStart());
 
         try {
             const res = await axios.post(
@@ -30,51 +34,39 @@ const Login = () => {
                 formData,
                 { withCredentials: true }
             );
-
             const { token, user } = res.data;
 
-            if (token && user) {
-                loginContext(user, token); // context login
-                localStorage.setItem("user", JSON.stringify(user));
+            if (user && token) {
+                dispatch(loginSuccess({ user, token }));
                 toast.success("Login successful!");
-                navigate('/admin')
+                navigate(user.role === "admin" ? "/admin/dashboard" : "/user/dashboard");
             } else {
                 throw new Error("Invalid login response");
             }
         } catch (err) {
-            const msg =
-                err.response?.data?.message ||
-                "Login failed. Check your credentials or try again later.";
-            toast.error(msg);
-        } finally {
-            setLoading(false);
+            dispatch(loginFailure());
+            toast.error(
+                err.response?.data?.message || "Login failed. Please try again."
+            );
         }
     };
 
-    // ✅ Redirect after successful login
-    
     useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            if (storedUser.role === "admin") {
-                navigate("/admin");
-            } else if (storedUser.role === "user") {
-                navigate("/user/dashboard");
-            }
+        if (user) {
+            const redirectPath = user.role === "admin" ? "/admin/dashboard" : "/user/dashboard";
+            navigate(redirectPath);
         }
-    }, [navigate]);
-    
+    }, [user, navigate]);
 
     return (
         <>
-            <ToastContainer  />
+            <ToastContainer />
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4">
                 <div className="w-full max-w-md bg-white dark:bg-gray-900 p-8 rounded-xl shadow-xl transition duration-300">
                     <h2 className="text-3xl font-bold text-center text-indigo-700 dark:text-indigo-400 mb-6">
                         Welcome Back 👋
                     </h2>
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Email */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Email
@@ -86,13 +78,11 @@ const Login = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                autoComplete="email"
                                 placeholder="you@example.com"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             />
                         </div>
 
-                        {/* Password */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Password
@@ -104,21 +94,16 @@ const Login = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                autoComplete="current-password"
                                 placeholder="••••••••"
                                 className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 dark:text-white transition"
                             />
                         </div>
+
                         <div className="text-right text-sm mt-1">
-                            <Link
-                                to="/forget-password"
-                                className="text-indigo-600 hover:underline dark:text-indigo-400"
-                            >
+                            <Link to="/forget-password" className="text-indigo-600 hover:underline dark:text-indigo-400">
                                 Forgot Password?
                             </Link>
                         </div>
-
-                        {/* Submit Button */}
 
                         <button
                             type="submit"
@@ -132,7 +117,6 @@ const Login = () => {
                         </button>
                     </form>
 
-                    {/* Signup Link */}
                     <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
                         Don’t have an account?{" "}
                         <Link to="/signup" className="text-indigo-600 font-medium hover:underline">

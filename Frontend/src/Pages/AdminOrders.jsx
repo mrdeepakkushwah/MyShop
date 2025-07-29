@@ -1,3 +1,4 @@
+// AdminOrders.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -6,35 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
     const [filterStatus, setFilterStatus] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
     const [updatingOrderId, setUpdatingOrderId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const ordersPerPage = 6;
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await axios.get("https://myshop-72k8.onrender.com/getOrderAdmin", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                  console.log(response)
-                setOrders(response.data.orders || []);
-            } catch (err) {
-                toast.error("Failed to load orders");
-                setError("Failed to load orders");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOrders();
-    }, []);
-
     const statusOptions = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
-
     const statusColors = {
         Delivered: "bg-green-100 text-green-700 border border-green-300",
         Shipped: "bg-blue-100 text-blue-700 border border-blue-300",
@@ -43,43 +23,49 @@ const AdminOrders = () => {
         Pending: "bg-gray-100 text-gray-700 border border-gray-300",
     };
 
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await axios.get("https://myshop-72k8.onrender.com/getOrderAdmin", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setOrders(res.data.orders || []);
+            } catch (err) {
+                console.error(err);
+                toast.error("Failed to fetch orders");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
+
     const handleStatusChange = async (orderId, newStatus) => {
         const token = localStorage.getItem("token");
         const order = orders.find((o) => o._id === orderId);
 
-        if (!order) {
-            toast.error("Order not found.");
-            return;
+        if (!order) return toast.error("Order not found.");
+        if (["Delivered", "Cancelled"].includes(order.status)) {
+            return toast.warning(`Cannot update a ${order.status.toLowerCase()} order.`);
         }
-
-        if (order.status === "Delivered" || order.status === "Cancelled") {
-            toast.warn(`Cannot update a ${order.status.toLowerCase()} order.`);
-            return;
-        }
-
         if (order.status === newStatus) return;
 
         setUpdatingOrderId(orderId);
-
         try {
-            await axios.put(
+            const res = await axios.put(
                 `https://myshop-72k8.onrender.com/orders/${orderId}/status`,
                 { status: newStatus },
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            setOrders((prevOrders) =>
-                prevOrders.map((order) =>
-                    order._id === orderId ? { ...order, status: newStatus } : order
-                )
+            setOrders((prev) =>
+                prev.map((o) => (o._id === orderId ? { ...o, status: res.data.order.status } : o))
             );
-
-            toast.success("Order status updated successfully");
+            toast.success("Order status updated");
         } catch (err) {
             console.error(err);
-            toast.error("Failed to update order status");
+            toast.error("Failed to update status");
         } finally {
             setUpdatingOrderId(null);
         }
@@ -88,214 +74,150 @@ const AdminOrders = () => {
     const filteredOrders = orders.filter((order) => {
         const matchesStatus = filterStatus === "All" || order.status === filterStatus;
         const matchesSearch =
-            order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.userId?.name?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesStatus && matchesSearch;
     });
 
     const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-    const startIndex = (currentPage - 1) * ordersPerPage;
-    const currentOrders = filteredOrders.slice(startIndex, startIndex + ordersPerPage);
-
-    const goToPage = (page) => {
-        if (page < 1 || page > totalPages) return;
-        setCurrentPage(page);
-        window.scrollTo({ behavior: "smooth" });
-    };
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="w-12 h-12 border-4 border-indigo-500 border-dashed rounded-full animate-spin" />
-            </div>
-        );
-    }
-
-    if (error) {
-        return <div className="p-6 text-center text-red-500">{error}</div>;
-    }
+    const currentOrders = filteredOrders.slice((currentPage - 1) * ordersPerPage, currentPage * ordersPerPage);
 
     return (
-        <div className="p-4 sm:p-6 md:p-10 max-w-7xl mx-auto min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100">
+        <div className="min-h-screen bg-gray-50 p-4 sm:p-6 md:p-10">
             <ToastContainer />
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-8 text-center">
-                Orders
-            </h1>
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Admin Orders</h1>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <select
-                            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={filterStatus}
-                            onChange={(e) => {
-                                setFilterStatus(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                        >
-                            <option value="All">All Statuses</option>
-                            {statusOptions.map((status) => (
-                                <option key={status} value={status}>
-                                    {status}
-                                </option>
-                            ))}
-                        </select>
+            <div className="bg-white rounded-xl shadow-md p-6 space-y-6">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between">
+                    <select
+                        value={filterStatus}
+                        onChange={(e) => {
+                            setFilterStatus(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="border rounded px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                        <option value="All">All Statuses</option>
+                        {statusOptions.map((status) => (
+                            <option key={status}>{status}</option>
+                        ))}
+                    </select>
 
-                        <input
-                            type="text"
-                            placeholder="Search by Order ID or Customer Name"
-                            value={searchTerm}
-                            onChange={(e) => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
-                            }}
-                            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-72"
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search by Order ID or Name"
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="border rounded px-4 py-2 w-full sm:w-80 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
                 </div>
 
-                {!filteredOrders.length ? (
-                    <p className="text-gray-500 italic text-center">No matching orders found.</p>
+                {loading ? (
+                    <div className="flex justify-center py-12">
+                        <div className="w-12 h-12 border-4 border-indigo-500 border-dashed rounded-full animate-spin" />
+                    </div>
+                ) : filteredOrders.length === 0 ? (
+                    <p className="text-center text-gray-500">No matching orders found.</p>
                 ) : (
-                    <>
-                        <div className="grid gap-6">
-                            {currentOrders.map((order) => {
-                                const user = order.userId;
-                                return (
-                                    <div
-                                        key={order._id}
-                                        className="bg-white rounded-lg border border-gray-200 shadow-sm p-5 hover:shadow-md transition-all duration-200"
+                    <div className="space-y-6">
+                        {currentOrders.map((order) => (
+                            <div key={order._id} className="border rounded-xl p-5 bg-gray-50 shadow-sm">
+                                <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+                                    <p className="text-sm text-gray-600">
+                                        <strong>Order Date:</strong>{" "}
+                                        {new Date(order.createdAt).toLocaleString("en-IN", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </p>
+
+                                    <select
+                                        className={`text-xs font-medium mt-2 md:mt-0 px-3 py-1 rounded-full cursor-pointer transition-all duration-200 ${statusColors[order.status] || "bg-gray-200 text-gray-800"
+                                            }`}
+                                        value={order.status}
+                                        disabled={updatingOrderId === order._id || ["Delivered", "Cancelled"].includes(order.status)}
+                                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                     >
-                                        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-                                            <div className="text-sm text-gray-600">
-                                                <span className="font-medium">Order Date:</span>{" "}
-                                                {new Date(order.createdAt).toLocaleString("en-IN", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "2-digit",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                })}
-                                            </div>
+                                        {statusOptions.map((s) => (
+                                            <option key={s} value={s}>
+                                                {s}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                                            <select
-                                                value={order.status || "Pending"}
-                                                onChange={(e) =>
-                                                    handleStatusChange(order._id, e.target.value)
-                                                }
-                                                disabled={
-                                                    updatingOrderId === order._id ||
-                                                    ["Delivered", "Cancelled"].includes(order.status)
-                                                }
-                                                className={`mt-2 md:mt-0 px-3 py-1 rounded-full text-xs font-medium cursor-pointer ${statusColors[order.status] || "bg-gray-200 text-gray-700"
-                                                    }`}
-                                            >
-                                                {statusOptions.map((status) => (
-                                                    <option key={status} value={status}>
-                                                        {status}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                                            {order.items?.map((item, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="flex items-center gap-3 border rounded-md bg-gray-50 p-2"
-                                                >
-                                                    <img
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                        className="w-14 h-14 object-cover rounded border"
-                                                    />
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-gray-800">
-                                                            {item.name}
-                                                        </p>
-                                                        <p className="text-xs text-gray-600">
-                                                            Qty: {item.qty} | ₹{item.price}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-sm text-gray-700">
-                                            <div className="mb-3 sm:mb-0">
-                                                <p>
-                                                    <span className="font-semibold">Customer:</span>{" "}
-                                                    {user?.name} ({user?.email})
-                                                </p>
-                                                <p>
-                                                    <span className="font-semibold">City:</span>{" "}
-                                                    {user?.city},{" "}
-                                                    <span className="font-semibold">Pincode:</span>{" "}
-                                                    {user?.pincode}
+                                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mb-4">
+                                    {order.items.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-3 bg-white p-2 rounded shadow">
+                                            <img
+                                                src={item.image}
+                                                alt={item.name}
+                                                className="w-14 h-14 object-cover rounded border"
+                                            />
+                                            <div>
+                                                <p className="font-semibold text-gray-800">{item.name}</p>
+                                                <p className="text-sm text-gray-600">
+                                                    Qty: {item.qty} | ₹{item.price}
                                                 </p>
                                             </div>
-                                            <div className="text-lg font-bold text-indigo-600">
-                                                ₹{order.totalAmount?.toFixed(2)}
-                                            </div>
                                         </div>
+                                    ))}
+                                </div>
 
-                                        {order.status === "Pending" && (
-                                            <div className="text-right mt-4">
-                                                <button
-                                                    onClick={() =>
-                                                        alert("Implement Razorpay integration here")
-                                                    }
-                                                    className="inline-block px-5 py-2 bg-indigo-600 text-white text-sm rounded-lg shadow hover:bg-indigo-700 transition"
-                                                >
-                                                    Pay Now
-                                                </button>
-                                            </div>
-                                        )}
+                                <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-700">
+                                    <div>
+                                        <p>
+                                            <strong>Customer:</strong>{" "}
+                                            {order.userId?.name || "N/A"} ({order.userId?.email || "N/A"})
+                                        </p>
+                                        <p>
+                                            <strong>City:</strong> {order.shipping?.city || "N/A"} |{" "}
+                                            <strong>Zip:</strong> {order.shipping?.zip || "N/A"}
+                                        </p>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                    <div className="text-indigo-600 font-bold text-lg mt-2 sm:mt-0">
+                                        ₹{order.totalAmount?.toFixed(2)}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
 
-                        <div className="flex justify-center items-center space-x-3 mt-8">
+                        {/* Pagination */}
+                        <div className="flex justify-center space-x-2 pt-6">
                             <button
-                                onClick={() => goToPage(currentPage - 1)}
+                                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                                 disabled={currentPage === 1}
-                                className={`px-3 py-1 rounded border ${currentPage === 1
-                                    ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                    : "text-indigo-600 border-indigo-600 hover:bg-indigo-100"
-                                    }`}
+                                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
                             >
                                 Prev
                             </button>
-
-                            {[...Array(totalPages)].map((_, idx) => {
-                                const page = idx + 1;
-                                return (
-                                    <button
-                                        key={page}
-                                        onClick={() => goToPage(page)}
-                                        className={`px-3 py-1 rounded border ${page === currentPage
+                            {Array.from({ length: totalPages }, (_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`px-3 py-1 border rounded text-sm ${currentPage === i + 1
                                             ? "bg-indigo-600 text-white border-indigo-600"
-                                            : "text-indigo-600 border-indigo-600 hover:bg-indigo-100"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                );
-                            })}
-
+                                            : "text-indigo-600"
+                                        }`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
                             <button
-                                onClick={() => goToPage(currentPage + 1)}
+                                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className={`px-3 py-1 rounded border ${currentPage === totalPages
-                                    ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                    : "text-indigo-600 border-indigo-600 hover:bg-indigo-100"
-                                    }`}
+                                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
                             >
                                 Next
                             </button>
                         </div>
-                    </>
+                    </div>
                 )}
             </div>
         </div>
