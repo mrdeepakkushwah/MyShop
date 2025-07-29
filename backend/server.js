@@ -6,6 +6,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+import http from "http";
+import { Server } from "socket.io";
+
 // Import routes and middleware
 import routes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productsRoutes.js";
@@ -33,15 +36,28 @@ dbConnect();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(
-  cors({
-    origin:process.env.CLIENT_URL || '*',
-    credentials: true,
+// Setup CORS
+const httpServer = http.createServer(app);
+
+const io = new Server(httpServer,{
+  cors: {
+    origin: process.env.CLIENT_URL || '*',
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  })
-);
+    credentials: true,
+  },    
+
+})
+// app.use(
+//   cors({
+//     origin:process.env.CLIENT_URL || '*',
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   })
+// );
 
 // API Routes
+
+
 app.use("/", routes);
 app.use("/", productRoutes);
 app.use("/", orderRoutes);
@@ -64,9 +80,22 @@ app.use((req, res) => {
 // Global error handler
 app.use(errorHandler);
 
+
+
+app.set("io", io);
+// Socket.io connection
+io.on("connection", (socket) => {
+  console.log("🟢 New client connected:", socket.id);
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
+
 // Start server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`✅ Server ready at: http://localhost:${PORT}`);
   console.log(
     `🔐 JWT Secret: ${process.env.JWT_SECRET ? "✔ Loaded" : "❌ Missing"}`

@@ -11,6 +11,7 @@ import {
   ForgetPassword,
   deleteUser,
   AdminUserUpdateById,
+  AdminUseraDeletById,
 } from "../controllers/authController.js";
 import { getOrdersAdmin } from "../controllers/ordersController.js";
 
@@ -29,10 +30,11 @@ router.put("/update-profile", authenticate, updateUserData);
 router.get('/admin/getorders',authenticate,authorizeRoles("admin"),getOrdersAdmin)
 // router.patch("/admin/update-user/:id", authenticate, authorizeRoles("admin"), AdminUserUpdateById);
 router.patch(
-  "/admin/update-user/:userId",
+  "/admin/update-user/:id",
   authenticate,
   authorizeRoles("admin"),
   AdminUserUpdateById
 );
+router.delete('/admin/delete-user/:id', authenticate, authorizeRoles('admin'), AdminUseraDeletById);
 
 export default router;
