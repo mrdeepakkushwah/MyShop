@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./Components/MainLayout";
+import ProtectedRoute from "./Components/ProtectedRoute"; // assuming you have it
 
 import Home from "./Pages/Home";
 import About from "./Pages/About";
@@ -31,72 +32,53 @@ const App = () => {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route
-          path="/login"
-          element={
-
-            <Login />
-
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-
-            <Signup />
-
-          }
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/order-success" element={<OrderSuccess />} />
 
         {/* Protected Checkout */}
-        <Route
-          path="/checkout"
-          element={
-            <CheckoutPage />
-
-          }
-        />
+        <Route path="/checkout" element={<CheckoutPage />} />
 
         {/* User Protected Routes */}
         <Route
           path="/user/dashboard"
           element={
-
-            <UserDashboard />
-
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserDashboard />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/profile"
           element={
-
-            <UserProfile />
-
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserProfile />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/user/orders"
           element={
-
-            <OrderHistory />
-
+            <ProtectedRoute allowedRoles={["user"]}>
+              <OrderHistory />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/orders"
           element={
-
-            <MyOrders />
-
+            <ProtectedRoute allowedRoles={["user"]}>
+              <MyOrders />
+            </ProtectedRoute>
           }
         />
         <Route
           path="/track-order"
           element={
-
-            <TrackOrder />
+            <ProtectedRoute allowedRoles={["user"]}>
+              <TrackOrder />
+            </ProtectedRoute>
           }
         />
       </Route>
@@ -105,12 +87,12 @@ const App = () => {
       <Route
         path="/admin/dashboard"
         element={
-
-          <Dashboard />
-
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <Dashboard />
+          </ProtectedRoute>
         }
       >
-        {/* <Route index element={<Navigate to="customers" replace />} /> */}
+        <Route index element={<Navigate to="customers" replace />} />
         <Route path="customers" element={<Customer />} />
         <Route path="products" element={<AdminProducts />} />
         <Route path="orders" element={<AdminOrders />} />

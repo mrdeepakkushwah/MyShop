@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from '../models/userModel.js';
-import e from "express";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRES_IN =process.env.ACCESS_TOKEN_EXPIRES_IN || "1d";
