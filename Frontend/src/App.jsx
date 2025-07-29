@@ -103,14 +103,14 @@ const App = () => {
 
       {/* Admin Dashboard Routes */}
       <Route
-        path="admin/dashboard"
+        path="/admin/dashboard"
         element={
 
           <Dashboard />
 
         }
       >
-        <Route index element={<Navigate to="customers" replace />} />
+        {/* <Route index element={<Navigate to="customers" replace />} /> */}
         <Route path="customers" element={<Customer />} />
         <Route path="products" element={<AdminProducts />} />
         <Route path="orders" element={<AdminOrders />} />

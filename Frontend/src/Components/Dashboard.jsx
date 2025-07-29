@@ -43,7 +43,7 @@ const Dashboard = () => {
     };
 
     const navItems = [
-        { name: "Dashboard", to: "dashboard", icon: LayoutDashboard },
+        { name: "Dashboard", to: "/admin/dashboard", icon: LayoutDashboard },
         { name: "Customers", to: "customers", icon: Users },
         { name: "Products", to: "products", icon: Package },
         { name: "Orders", to: "orders", icon: ShoppingCart },
