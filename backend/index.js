@@ -67,9 +67,6 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  // console.log(`✅ Server running at http://localhost:${PORT}`);
-  // console.log("🌍 Environment:", process.env.NODE_ENV || "development");
-  // console.log("🎯 Client URL:", process.env.CLIENT_URL);
   console.log(`✅ Server ready at: http://localhost:${PORT}`);
   console.log(
     `🔐 JWT Secret: ${process.env.JWT_SECRET ? "✔ Loaded" : "❌ Missing"}`

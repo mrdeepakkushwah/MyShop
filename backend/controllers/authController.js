@@ -289,3 +289,36 @@ export const updateUserData = async (req, res) => {
       .json({ message: "Error updating user", error: error.message });
   }
 };
+
+export const AdminUserUpdateById = async (req, res) => { 
+  try {
+    const { userId } = req.params;
+    const { name, role } = req.body;
+
+    if (!userId || !name || !role) {
+      return res.status(400).json({ message: "User ID, name, and role are required." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    user.name = name;
+    user.role = role;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      user: getSafeUser(user),
+    });
+  } catch (error) {
+    console.error("Admin update error:", error);
+    return res
+      .status(500)
+      .json({ message: "Error updating user", error: error.message });
+  }   
+    
+
+}

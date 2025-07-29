@@ -10,6 +10,7 @@ import {
   getAllUsers,
   ForgetPassword,
   deleteUser,
+  AdminUserUpdateById,
 } from "../controllers/authController.js";
 import { getOrdersAdmin } from "../controllers/ordersController.js";
 
@@ -26,5 +27,5 @@ router.get('/admin/users',authenticate,getAllUsers);
 router.get("/me", authenticate, getUserData);
 router.put("/update-profile", authenticate, updateUserData);
 router.get('/admin/getorders',authenticate,authorizeRoles("admin"),getOrdersAdmin)
-
+router.put("/admin/update-user/:id", authenticate, authorizeRoles("admin"), AdminUserUpdateById);
 export default router;
