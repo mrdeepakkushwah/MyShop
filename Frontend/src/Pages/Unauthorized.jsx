@@ -20,7 +20,8 @@ const Unauthorized = () => {
                 <h1 className="text-2xl font-bold mb-2">403 - Unauthorized</h1>
                 <p>You do not have permission to view this page.</p>
                 <p className="mt-2 text-gray-600">
-                    Redirecting in <span className="font-semibold">{countdown}</span>{" "}
+                    Redirecting in{" "}
+                    <span className="font-semibold">{countdown}</span>{" "}
                     second{countdown !== 1 ? "s" : ""}...
                 </p>
             </div>
