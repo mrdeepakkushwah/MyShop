@@ -101,19 +101,20 @@
 
 // server.js
 // server.js
-import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import { config } from "dotenv";
+const  express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const { config } = require("dotenv");
+// Load environment variables 
 config();
 
 // Routes & DB
-import routes from "./routes/authRoutes.js";
-import productRoutes from "./routes/productsRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
-import dbConnect from "./config/dbConnect.js";
-import errorHandler from "./middlewares/errorHandler.js";
-import { authenticate, authorizeRoles } from "./middlewares/authMiddleware.js";
+const routes = require( "./routes/authRoutes.js");
+const productRoutes  =  require("./routes/productsRoutes.js");
+const  orderRoutes = require( "./routes/orderRoutes.js");
+const dbConnect  = require("./config/dbConnect.js");
+const errorHandler = require("./middlewares/errorHandler.js");
+const  { authenticate, authorizeRoles }  = require("./middlewares/authMiddleware.js");
 
 // Validate environment
 const REQUIRED_VARS = ["JWT_SECRET", "MONGODB_URI", "CLIENT_URL"];

@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
+const  jwt  = require("jsonwebtoken");
 const { verify } = jwt;
 
-import User from "../models/userModel.js"; // ✅ Corrected import
+const  User =  require("../models/userModel.js"); // ✅ Corrected import
 
 // 🔐 Authenticate Middleware
 const authenticate = async (req, res, next) => {
@@ -52,4 +52,4 @@ const authorizeRoles = (...roles) => {
   };
 };
 
-export { authenticate, authorizeRoles };
+module.exports =  { authenticate, authorizeRoles };

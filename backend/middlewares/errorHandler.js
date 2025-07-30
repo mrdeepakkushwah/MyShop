@@ -8,4 +8,4 @@ const errorHandler = (err, req, res, next) => {
   res.status(statusCode).json({ message });
 };
 
-export default errorHandler;
+module.exports =  errorHandler;

@@ -1,4 +1,4 @@
-import Product from "../models/productsModel.js";
+const Product  = require("../models/productsModel.js");
 
 // POST /product/add
 const addProduct = async (req, res) => {
@@ -146,7 +146,7 @@ const deleteProductById = async (req, res) => {
   }
 };
 
-export {
+module.exports = {
   addProduct,
   updateStock,
   deleteProductById,

@@ -1,13 +1,10 @@
-import { Types } from "mongoose";
-import Product from "../models/productsModel.js";
-import Order from "../models/orderModel.js";
-import User from "../models/userModel.js";
+const { Types }  = require("mongoose");
+const  Product  = require("../models/productsModel.js");
+const Order  =  require("../models/orderModel.js");
+const User  = require("../models/userModel.js");
 
 // POST /order/place
-/** * Place a new order
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- */   
+
 const addOrders = async (req, res) => {
   const { items, totalAmount, shipping } = req.body;
 
@@ -188,7 +185,7 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-export {
+module.exports  = {
   addOrders,
   getOrders,
   getOrderById,

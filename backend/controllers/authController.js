@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
-import jwt from "jsonwebtoken";
-import User from '../models/userModel.js';
+const  bcrypt = require('bcrypt');
+const jwt  =  require("jsonwebtoken");
+const User  = require('../models/userModel.js');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const ACCESS_TOKEN_EXPIRES_IN =process.env.ACCESS_TOKEN_EXPIRES_IN || "1d";
@@ -30,7 +30,7 @@ const generateAccessToken = (user) => {
 };
 
 // ---------- Signup ----------
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
   try {
     const { name, email, password, contact, city, pincode, dob, gender } =
       req.body;
@@ -101,7 +101,7 @@ export const signup = async (req, res) => {
 };
 
 // ---------- Login ----------
-export const loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password} = req.body;
 
@@ -136,7 +136,7 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const ForgetPassword = async (req, res) => {
+const ForgetPassword = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -169,12 +169,12 @@ export const ForgetPassword = async (req, res) => {
 };
 
 // ---------- Logout ----------
-export const logoutUser = (req, res) => {
+const logoutUser = (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
 // ---------- Get User Data ----------
-export const getUserData = async (req, res) => {
+const getUserData = async (req, res) => {
   try {
     const userId = req.user?.id;
     const user = await User.findById(userId).select("-password");
@@ -188,7 +188,7 @@ export const getUserData = async (req, res) => {
       .json({ message: "Failed to fetch user data", error: error.message });
   }
 };
-export const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const { userId } = req.body;
 
@@ -215,7 +215,7 @@ export const deleteUser = async (req, res) => {
 };
 
 // --------- Get all Uesrs -----------
-export const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
     return res.status(200).json({ message: "All users fetched", users }); // ✅ Now it's an array
@@ -229,7 +229,7 @@ export const getAllUsers = async (req, res) => {
 
 
 // ---------- Update User Data ----------
-export const updateUserData = async (req, res) => {
+ const updateUserData = async (req, res) => {
   try {
     const { name, email, password, contact, city, pincode, dob, gender } =
       req.body;
@@ -289,77 +289,15 @@ export const updateUserData = async (req, res) => {
       .json({ message: "Error updating user", error: error.message });
   }
 };
-
-// ---------- Admin Update User by ID ----------
-
-// export const AdminUserUpdateById = async (req, res) => {
-//   try {
-//     const userId = req.params.id; // ✅ Correct way to access :id from route
-//     const { name, role } = req.body;
-//     const io = req.app.get("io"); // Get the io instance from the app
-//     if (!io) {
-//       return res.status(500).json({ message: "WebSocket server not initialized." });
-//     }
-
-//     if (!userId || !name || !role) {
-//       return res
-//         .status(400)
-//         .json({ message: "User ID, name, and role are required." });
-//     }
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found." });
-//     }
-
-//     user.name = name;
-//     user.role = role;
-
-//     await user.save();
-
-//     const safeUser = getSafeUser(user); // Strip sensitive info
-
-//     // ✅ Emit WebSocket update
-//     io.emit("userUpdated", safeUser);
-
-//     return res.status(200).json({
-//       message: "User updated successfully",
-//       user: safeUser,
-//     });
-//   } catch (error) {
-//     console.error("Admin update error:", error);
-//     return res
-//       .status(500)
-//       .json({ message: "Error updating user", error: error.message });
-//   }
-// };
-// ---------- Admin Delete User by ID ----------
-// export const AdminUseraDeletById = async (req, res) => {
-//   try {
-//     const userId = req.params.id;
-
-//     if (!userId) {
-//       return res.status(400).json({ message: "User ID is required." });
-//     }
-
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found." });
-//     }
-
-//     await User.findByIdAndDelete(userId);
-
-//     const io = req.app.get("io");
-//     if (io) {
-//       io.emit("userDeleted", userId);
-//     }
-//     return res.status(200).json({ message: "User deleted successfully." });
-//   } catch (error) {
-//     console.error("Admin delete error:", error);
-//     return res
-//       .status(500)
-//       .json({ message: "Error deleting user", error: error.message });
-//   }
-// };
-
-
+module.exports = {
+  signup,
+  loginUser,
+  logoutUser,
+  ForgetPassword,
+  updateUserData,
+  getAllUsers,
+  getSafeUser,
+  getUserData,
+  deleteUser,
+  
+}

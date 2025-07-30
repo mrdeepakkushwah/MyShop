@@ -1,7 +1,7 @@
 // authRoutes.js
-import express from "express";
-import { authenticate, authorizeRoles } from "../middlewares/authMiddleware.js";
-import {
+const express = require("express");
+const { authenticate, authorizeRoles }  = require("../middlewares/authMiddleware.js");
+const {
   signup,
   loginUser,
   logoutUser,
@@ -10,9 +10,9 @@ import {
   getAllUsers,
   ForgetPassword,
   deleteUser,
-} from "../controllers/authController.js";
-import { AdminUserUpdateById, AdminUseraDeletById } from "../controllers/AdminController.js";
-import { getOrdersAdmin } from "../controllers/ordersController.js";
+}  = require("../controllers/authController.js");
+const { AdminUserUpdateById, AdminUseraDeletById }  = require("../controllers/AdminController.js");
+const { getOrdersAdmin }  = require("../controllers/ordersController.js");
 
 const router = express.Router();
 
@@ -36,4 +36,4 @@ router.patch(
 );
 router.delete('/admin/delete-user/:id', authenticate, authorizeRoles('admin'), AdminUseraDeletById);
 
-export default router;
+module.exports =  router;

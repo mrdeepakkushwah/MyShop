@@ -1,8 +1,8 @@
 // backend/controllers/adminController.js
-import User from "../models/userModel.js";
+const  User = require("../models/userModel.js");
 
 // ✅ UPDATE USER
-export const AdminUserUpdateById = async (req, res, next) => {
+const AdminUserUpdateById = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
@@ -22,7 +22,7 @@ export const AdminUserUpdateById = async (req, res, next) => {
 };
 
 // ✅ DELETE USER
-export const AdminUseraDeletById = async (req, res, next) => {
+ const AdminUseraDeletById = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
@@ -36,4 +36,9 @@ export const AdminUseraDeletById = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = {
+  AdminUserUpdateById,
+  AdminUseraDeletById
+}
 
