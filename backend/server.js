@@ -102,8 +102,6 @@
 // server.js
 // server.js
 import express from "express";
-import http from "http";
-import { Server } from "socket.io";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { config } from "dotenv";
@@ -127,17 +125,6 @@ if (missingVars.length) {
 
 // Initialize app & server
 const app = express();
-const httpServer = http.createServer(app);
-
-// ✅ WebSocket Server
-const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL || "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  },
-});
-app.set("io", io);
 
 // DB connect
 dbConnect();
@@ -171,17 +158,9 @@ app.use((req, res) => {
 // Global Error
 app.use(errorHandler);
 
-// ✅ WebSocket Events
-io.on("connection", (socket) => {
-  console.log("🟢 New client connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("🔴 Client disconnected:", socket.id);
-  });
-});
 
 // Start server
 const PORT = process.env.PORT || 4000;
-httpServer.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`✅ Server ready at: http://localhost:${PORT}`);
 });
