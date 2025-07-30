@@ -1,5 +1,5 @@
 // Load environment variables
-import { Server} from "socket.io";
+// import { Server} from "socket.io";
 import { config } from "dotenv";
 config();
 
@@ -7,7 +7,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import http from "http";
+// import http from "http";
 
 // Import routes and middleware
 import routes from "./routes/authRoutes.js";
@@ -37,26 +37,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // Setup CORS
-const httpServer = http.createServer(app);
+// const httpServer = http.createServer(app);
 
-const io = new Server(httpServer,{
-  cors: {
-    origin: process.env.CLIENT_URL || '*',
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  },    
-
-})
-// app.use(
-//   cors({
-//     origin:process.env.CLIENT_URL || '*',
+// const io = new Server(httpServer,{
+//   cors: {
+//     origin: process.env.CLIENT_URL || '*',
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
 //     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   })
-// );
+//   },    
 
-// API Routes
+// })
+
+
+
+app.use(
+  cors({
+    origin:process.env.CLIENT_URL || '*',
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 
 
 app.use("/", routes);
@@ -83,16 +84,16 @@ app.use(errorHandler);
 
 
 
-app.set("io", io);
-// Socket.io connection
-io.on("connection", (socket) => {
-  console.log("🟢 New client connected:", socket.id);
+// app.set("io", io);
+// // Socket.io connection
+// io.on("connection", (socket) => {
+//   console.log("🟢 New client connected:", socket.id);
 
-  // Handle disconnection
-  socket.on("disconnect", () => {
-    console.log("🔴 Client disconnected:", socket.id);
-  });
-});
+//   // Handle disconnection
+//   socket.on("disconnect", () => {
+//     console.log("🔴 Client disconnected:", socket.id);
+//   });
+// });
 
 // Start server
 const PORT = process.env.PORT || 4000;

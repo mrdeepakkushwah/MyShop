@@ -296,7 +296,7 @@ export const AdminUserUpdateById = async (req, res) => {
   try {
     const userId = req.params.id; // ✅ Correct way to access :id from route
     const { name, role } = req.body;
-    const io = req.app.get("io"); // Get the io instance from the app
+    // const io = req.app.get("io"); // Get the io instance from the app
     if (!io) {
       return res.status(500).json({ message: "WebSocket server not initialized." });
     }
@@ -320,7 +320,7 @@ export const AdminUserUpdateById = async (req, res) => {
     const safeUser = getSafeUser(user); // Strip sensitive info
 
     // ✅ Emit WebSocket update
-    io.emit("userUpdated", safeUser);
+    // io.emit("userUpdated", safeUser);
 
     return res.status(200).json({
       message: "User updated successfully",
@@ -349,10 +349,10 @@ export const AdminUseraDeletById = async (req, res) => {
 
     await User.findByIdAndDelete(userId);
 
-    const io = req.app.get("io");
-    if (io) {
-      io.emit("userDeleted", userId);
-    }
+    // const io = req.app.get("io");
+    // if (io) {
+    //   io.emit("userDeleted", userId);
+    // }
 
     return res.status(200).json({ message: "User deleted successfully." });
   } catch (error) {
