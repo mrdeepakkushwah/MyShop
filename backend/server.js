@@ -1,80 +1,67 @@
 // Load environment variables
-// import { Server} from "socket.io";
 import { config } from "dotenv";
 config();
 
+// Core modules
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import http from "http"; // For Socket.io (optional)
+import { Server } from "socket.io"; // For WebSocket support
 
-// import http from "http";
-
-// Import routes and middleware
-import routes from "./routes/authRoutes.js";
-import productRoutes from "./routes/productsRoutes.js";
-import orderRoutes from './routes/orderRoutes.js';
+// Internal modules
 import dbConnect from "./config/dbConnect.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { authenticate, authorizeRoles } from "./middlewares/authMiddleware.js";
 
-// Validate required environment variables
-const REQUIRED_VARS = ["JWT_SECRET", "MONGODB_URI", "CLIENT_URL"];
-const missingVars = REQUIRED_VARS.filter((v) => !process.env[v]);
+// Routes
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productsRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
+// Check for required env variables
+const REQUIRED_VARS = ["JWT_SECRET", "MONGODB_URI", "CLIENT_URL"];
+const missingVars = REQUIRED_VARS.filter((key) => !process.env[key]);
 if (missingVars.length) {
   console.error(`❌ Missing environment variables: ${missingVars.join(", ")}`);
   process.exit(1);
 }
 
-// Initialize app
+// Initialize app and database
 const app = express();
-
-// Connect to MongoDB
 dbConnect();
 
-// Middlewares
+// Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// Setup CORS
-// const httpServer = http.createServer(app);
-
-// const io = new Server(httpServer,{
-//   cors: {
-//     origin: process.env.CLIENT_URL || '*',
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//     credentials: true,
-//   },    
-
-// })
-
-
-
 app.use(
   cors({
-    origin:process.env.CLIENT_URL || '*',
+    origin: process.env.CLIENT_URL || "*",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   })
 );
 
-
-app.use("/", routes);
+// API Routes
+app.use("/", authRoutes);
 app.use("/", productRoutes);
 app.use("/", orderRoutes);
 
-// Admin protected test route
+// Admin-only route example
 app.get("/admin", authenticate, authorizeRoles("admin"), (req, res) => {
-  res.status(200).json({ message: "✅ Admin access granted.", user: req.user });
+  res.status(200).json({
+    message: "✅ Admin access granted.",
+    user: req.user,
+  });
 });
 
-// API welcome route
+// Default welcome route
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Welcome to MyShop API 🎉" });
+  res.status(200).json({ message: "🎉 Welcome to MyShop API" });
 });
 
-// 404 Not Found handler
+// Handle 404
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found." });
 });
@@ -82,29 +69,31 @@ app.use((req, res) => {
 // Global error handler
 app.use(errorHandler);
 
+// Create HTTP server and attach Socket.io (optional)
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.CLIENT_URL || "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  },
+});
 
-
+// Optional WebSocket logic
 // app.set("io", io);
-// // Socket.io connection
-// io.on("connection", (socket) => {
-//   console.log("🟢 New client connected:", socket.id);
+io.on("connection", (socket) => {
+  console.log("🟢 Client connected:", socket.id);
 
-//   // Handle disconnection
-//   socket.on("disconnect", () => {
-//     console.log("🔴 Client disconnected:", socket.id);
-//   });
-// });
+  socket.on("disconnect", () => {
+    console.log("🔴 Client disconnected:", socket.id);
+  });
+});
 
-// Start server
+// Start the server
 const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
-  console.log(`✅ Server ready at: http://localhost:${PORT}`);
-  console.log(
-    `🔐 JWT Secret: ${process.env.JWT_SECRET ? "✔ Loaded" : "❌ Missing"}`
-  );
-  console.log(
-    `🌐 MongoDB URI: ${process.env.MONGODB_URI ? "✔ Loaded" : "❌ Missing"}`
-  );
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🔐 JWT Secret: ${process.env.JWT_SECRET ? "✔️" : "❌"}`);
+  console.log(`🌐 MongoDB URI: ${process.env.MONGODB_URI ? "✔️" : "❌"}`);
   console.log(`🌍 Client URL: ${process.env.CLIENT_URL}`);
-
 });
