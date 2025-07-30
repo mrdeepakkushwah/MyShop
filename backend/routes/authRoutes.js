@@ -10,9 +10,8 @@ import {
   getAllUsers,
   ForgetPassword,
   deleteUser,
-  AdminUserUpdateById,
-  AdminUseraDeletById,
 } from "../controllers/authController.js";
+import { AdminUserUpdateById, AdminUseraDeletById } from "../controllers/AdminController.js";
 import { getOrdersAdmin } from "../controllers/ordersController.js";
 
 const router = express.Router();

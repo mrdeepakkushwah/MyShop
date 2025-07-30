@@ -292,74 +292,74 @@ export const updateUserData = async (req, res) => {
 
 // ---------- Admin Update User by ID ----------
 
-export const AdminUserUpdateById = async (req, res) => {
-  try {
-    const userId = req.params.id; // ✅ Correct way to access :id from route
-    const { name, role } = req.body;
-    const io = req.app.get("io"); // Get the io instance from the app
-    if (!io) {
-      return res.status(500).json({ message: "WebSocket server not initialized." });
-    }
+// export const AdminUserUpdateById = async (req, res) => {
+//   try {
+//     const userId = req.params.id; // ✅ Correct way to access :id from route
+//     const { name, role } = req.body;
+//     const io = req.app.get("io"); // Get the io instance from the app
+//     if (!io) {
+//       return res.status(500).json({ message: "WebSocket server not initialized." });
+//     }
 
-    if (!userId || !name || !role) {
-      return res
-        .status(400)
-        .json({ message: "User ID, name, and role are required." });
-    }
+//     if (!userId || !name || !role) {
+//       return res
+//         .status(400)
+//         .json({ message: "User ID, name, and role are required." });
+//     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
 
-    user.name = name;
-    user.role = role;
+//     user.name = name;
+//     user.role = role;
 
-    await user.save();
+//     await user.save();
 
-    const safeUser = getSafeUser(user); // Strip sensitive info
+//     const safeUser = getSafeUser(user); // Strip sensitive info
 
-    // ✅ Emit WebSocket update
-    io.emit("userUpdated", safeUser);
+//     // ✅ Emit WebSocket update
+//     io.emit("userUpdated", safeUser);
 
-    return res.status(200).json({
-      message: "User updated successfully",
-      user: safeUser,
-    });
-  } catch (error) {
-    console.error("Admin update error:", error);
-    return res
-      .status(500)
-      .json({ message: "Error updating user", error: error.message });
-  }
-};
+//     return res.status(200).json({
+//       message: "User updated successfully",
+//       user: safeUser,
+//     });
+//   } catch (error) {
+//     console.error("Admin update error:", error);
+//     return res
+//       .status(500)
+//       .json({ message: "Error updating user", error: error.message });
+//   }
+// };
 // ---------- Admin Delete User by ID ----------
-export const AdminUseraDeletById = async (req, res) => {
-  try {
-    const userId = req.params.id;
+// export const AdminUseraDeletById = async (req, res) => {
+//   try {
+//     const userId = req.params.id;
 
-    if (!userId) {
-      return res.status(400).json({ message: "User ID is required." });
-    }
+//     if (!userId) {
+//       return res.status(400).json({ message: "User ID is required." });
+//     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
 
-    await User.findByIdAndDelete(userId);
+//     await User.findByIdAndDelete(userId);
 
-    const io = req.app.get("io");
-    if (io) {
-      io.emit("userDeleted", userId);
-    }
-    return res.status(200).json({ message: "User deleted successfully." });
-  } catch (error) {
-    console.error("Admin delete error:", error);
-    return res
-      .status(500)
-      .json({ message: "Error deleting user", error: error.message });
-  }
-};
+//     const io = req.app.get("io");
+//     if (io) {
+//       io.emit("userDeleted", userId);
+//     }
+//     return res.status(200).json({ message: "User deleted successfully." });
+//   } catch (error) {
+//     console.error("Admin delete error:", error);
+//     return res
+//       .status(500)
+//       .json({ message: "Error deleting user", error: error.message });
+//   }
+// };
 
 
