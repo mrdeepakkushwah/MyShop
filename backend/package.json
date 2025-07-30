@@ -1,13 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "A Node.js backend with Express, MongoDB, JWT, and validation",
+  "description": "Node.js backend for MyShop using Express, MongoDB, JWT, and WebSocket",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "build": "echo 'No build needed for backend'"
+    "lint": "echo \"Add ESLint config to lint your code\"",
+    "build": "echo \"No build step needed for backend.\""
   },
   "author": "Deepak Kushwah",
   "license": "ISC",
@@ -27,5 +28,17 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "express",
+    "nodejs",
+    "mongodb",
+    "jwt",
+    "backend",
+    "api",
+    "ecommerce"
+  ]
 }
