@@ -3,7 +3,7 @@
   env: node
   rootDir: backend
   buildCommand: npm install
-  startCommand: npm start
+  startCommand: npm start   # ✅ this runs "node server.js"
   envVars:
     - key: MONGODB_URI
       sync: false
