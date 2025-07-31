@@ -1,0 +1,19 @@
+- type: web
+  name: myshop-backend
+  env: node
+  rootDir: backend
+  buildCommand: npm install
+  startCommand: npm start   # ✅ this runs "node server.js"
+  envVars:
+    - key: MONGODB_URI
+      sync: false
+    - key: JWT_SECRET
+      sync: false
+    - key: CLIENT_URL
+      sync: false
+    - key: ACCESS_TOKEN_EXPIRES_IN
+      sync: false
+    - key: REFRESH_TOKEN_EXPIRES_IN
+      sync: false
+    - key: NODE_ENV
+      value: production
