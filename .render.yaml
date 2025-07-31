@@ -1,30 +1,19 @@
-services:
-  - type: web
-    name: myshop-backend
-    env: node
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: npm run preview
-    envVars:
-      - key: MONGODB_URI
-        sync: false
-      - key: JWT_SECRET
-        sync: false
-      - key: CLIENT_URL
-        sync: false
-      - key: ACCESS_TOKEN_EXPIRES_IN
-        sync: false
-      - key: REFRESH_TOKEN_EXPIRES_IN
-        sync: false
-      - key: NODE_ENV
-        value: production
-
-  - type: web
-    name: myshop-frontend
-    env: node
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: serve -s dist
-    envVars:
-      - key: NODE_ENV
-        value: production
+- type: web
+  name: myshop-backend
+  env: node
+  rootDir: backend
+  buildCommand: npm install
+  startCommand: npm start
+  envVars:
+    - key: MONGODB_URI
+      sync: false
+    - key: JWT_SECRET
+      sync: false
+    - key: CLIENT_URL
+      sync: false
+    - key: ACCESS_TOKEN_EXPIRES_IN
+      sync: false
+    - key: REFRESH_TOKEN_EXPIRES_IN
+      sync: false
+    - key: NODE_ENV
+      value: production
